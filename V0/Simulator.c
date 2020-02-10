@@ -21,5 +21,4 @@ int main(int argc, char *argv[]) {
 	// The simulation ends
 	ComputerSystem_PowerOff();
 	return 0;
-	//1920
 }
