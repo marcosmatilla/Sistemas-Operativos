@@ -1,0 +1,6 @@
+// Mi primer programa
+55  // Tamanio del programa en posiciones de memoria
+ADD 16 0
+WRITE 15
+MEMADD 1 15
+HALT

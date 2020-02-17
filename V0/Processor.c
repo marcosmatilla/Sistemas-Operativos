@@ -89,13 +89,28 @@ void Processor_DecodeAndExecuteInstruction() {
 
 	// Execute
 	switch (operationCode) {
-	  
+
+		// Instruction MEMADD
+		case MEMADD_INST:
+			//Indico de la dir. de lo que quiero
+			registerMAR_CPU=operand2;
+			//Me traigo de la main mamery a la cpu
+			Buses_write_AddressBus_From_To(CPU, MAINMEMORY);
+			//Le digo al controlador lo que quiero ahcer con el dato, en este caso leerlo
+			registerCTRL_CPU=CTRLREAD;
+			// Send to the main memory controller the operation
+			Buses_write_ControlBus_From_To(CPU,MAINMEMORY);
+			// Copy the read data to the accumulator register (cell es el valor que nos trae, el que queremos)
+			registerAccumulator_CPU= registerMBR_CPU.cell + operand1;
+			registerPC_CPU++;
+			break;
+
 		// Instruction ADD
 		case ADD_INST:
 			registerAccumulator_CPU= operand1 + operand2;
 			registerPC_CPU++;
 			break;
-		
+
 		// Instruction SHIFT (SAL and SAR)
 		case SHIFT_INST: 
 			operand1<0 ? (registerAccumulator_CPU <<= (-operand1)) : (registerAccumulator_CPU >>= operand1);
@@ -164,10 +179,10 @@ void Processor_DecodeAndExecuteInstruction() {
 		case HALT_INST: 
 			registerPSW_CPU=POWEROFF;
 			break;
-			  
+
 		// Unknown instruction
 		default : registerPC_CPU++;
-			  break;
+			break;
 	}
 	// Show final part of HARDWARE message with	CPU registers
 	ComputerSystem_DebugMessage(3,HARDWARE,InstructionNames[operationCode],operand1,operand2,registerPC_CPU,registerAccumulator_CPU,registerAccumulator_CPU, registerPSW_CPU);
