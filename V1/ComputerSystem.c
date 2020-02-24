@@ -13,8 +13,10 @@
 // and all user programs specified in the command line
 PROGRAMS_DATA *programList[PROGRAMSMAXNUMBER];
 
+
 // Powers on of the Computer System.
 void ComputerSystem_PowerOn(int argc, char *argv[], int paramIndex) {
+	void ComputerSystem_PrintProgramList();
 
 	// Obtain a list of programs in the command line
 	int daemonsBaseIndex = ComputerSystem_ObtainProgramList(argc, argv, paramIndex);
@@ -34,7 +36,7 @@ void ComputerSystem_PowerOn(int argc, char *argv[], int paramIndex) {
 	// Request the OS to do the initial set of tasks. The last one will be
 	// the processor allocation to the process with the highest priority
 	OperatingSystem_Initialize(daemonsBaseIndex);
-	
+	ComputerSystem_PrintProgramList();
 	// Tell the processor to begin its instruction cycle 
 	Processor_InstructionCycleLoop();
 	
@@ -49,3 +51,12 @@ void ComputerSystem_PowerOff() {
 
 /////////////////////////////////////////////////////////
 //  New functions below this line  //////////////////////
+void ComputerSystem_PrintProgramList(){
+	ComputerSystem_DebugMessage(101, INIT);
+	int i = 1;
+	while(i<PROGRAMSMAXNUMBER){
+		if(programList[i] == NULL) break;
+		ComputerSystem_DebugMessage(102, INIT, programList[i] -> executableName, programList[i] -> arrivalTime );
+		i++;
+	}
+}

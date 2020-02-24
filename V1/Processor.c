@@ -101,13 +101,13 @@ void Processor_DecodeAndExecuteInstruction() {
 	Processor_DeactivatePSW_Bit(OVERFLOW_BIT);
 
 	// Execute
-	switch (operationCode) {
-		
+	switch (operationCode) {		
 		// Instruction MEMADD
 		case MEMADD_INST:
 			registerMAR_CPU=operand2;
 			Buses_write_AddressBus_From_To(CPU, MMU);
-			MMU_readMemory();
+			registerCTRL_CPU=CTRLREAD;
+			Buses_write_ControlBus_From_To(CPU,MMU);
 			registerAccumulator_CPU= registerMBR_CPU.cell + operand1;
 			registerPC_CPU++;
 			break;
