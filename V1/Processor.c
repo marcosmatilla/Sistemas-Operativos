@@ -102,7 +102,16 @@ void Processor_DecodeAndExecuteInstruction() {
 
 	// Execute
 	switch (operationCode) {
-	  
+		
+		// Instruction MEMADD
+		case MEMADD_INST:
+			registerMAR_CPU=operand2;
+			Buses_write_AddressBus_From_To(CPU, MMU);
+			MMU_readMemory();
+			registerAccumulator_CPU= registerMBR_CPU.cell + operand1;
+			registerPC_CPU++;
+			break;
+
 		// Instruction ADD
 		case ADD_INST:
 			registerAccumulator_CPU= operand1 + operand2;
