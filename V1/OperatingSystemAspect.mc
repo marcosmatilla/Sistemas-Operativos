@@ -2864,19 +2864,23 @@ int OperatingSystem_LongTermScheduler() {
 # 124 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
-  switch (PID)
+  if (PID==-3)
   {
-  case -3:
-   ComputerSystem_DebugMessage(103, 'e', programList[i]->executableName);
-   break;
-
-  default:numberOfSuccessfullyCreatedProcesses++;
-  if (programList[i]->type==USERPROGRAM)
-   numberOfNotTerminatedUserProcesses++;
-
-  OperatingSystem_MoveToTheREADYState(PID);
-
+   ComputerSystem_DebugMessage(103, 'e', programList[i] -> executableName);
   }
+  else if(PID==-1){
+   ComputerSystem_DebugMessage(104, 'e', programList[i] -> executableName, "it does not exist");
+  }
+  else{
+   numberOfSuccessfullyCreatedProcesses++;
+   if (programList[i]->type==USERPROGRAM)
+    numberOfNotTerminatedUserProcesses++;
+
+   OperatingSystem_MoveToTheREADYState(PID);
+  }
+
+
+
 
  }
 
@@ -2903,6 +2907,12 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 
 
  processSize=OperatingSystem_ObtainProgramSize(&programFile, executableProgram->executableName);
+ if(processSize==-1){
+  return -1;
+ }
+ if(processSize==-2){
+  return -2;
+ }
 
 
  priority=OperatingSystem_ObtainPriority(programFile);
