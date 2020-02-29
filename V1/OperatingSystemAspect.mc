@@ -995,6 +995,7 @@ INC_INST,
 HALT_INST,
 OS_INST,
 IRET_INST,
+MEMADD_INST,
 # 10 "ProcessorBase.h" 2
 
 LAST_INST,
@@ -2863,11 +2864,20 @@ int OperatingSystem_LongTermScheduler() {
 # 124 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
-  numberOfSuccessfullyCreatedProcesses++;
+  switch (PID)
+  {
+  case -3:
+   ComputerSystem_DebugMessage(103, 'e', programList[i]->executableName);
+   break;
+
+  default:numberOfSuccessfullyCreatedProcesses++;
   if (programList[i]->type==USERPROGRAM)
    numberOfNotTerminatedUserProcesses++;
 
   OperatingSystem_MoveToTheREADYState(PID);
+
+  }
+
  }
 
 
@@ -2887,6 +2897,9 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 
 
  PID=OperatingSystem_ObtainAnEntryInTheProcessTable();
+ if(PID==-3){
+  return -3;
+ }
 
 
  processSize=OperatingSystem_ObtainProgramSize(&programFile, executableProgram->executableName);
