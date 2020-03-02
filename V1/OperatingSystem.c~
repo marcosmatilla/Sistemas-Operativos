@@ -74,10 +74,7 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 	OperatingSystem_PrepareDaemons(daemonsIndex);
 	
 	// Create all user processes from the information given in the command line
-	int process = OperatingSystem_LongTermScheduler(); 
-	if( process <= 1){
-		exit(1);
-	}
+	OperatingSystem_LongTermScheduler();
 	
 	if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
 		// Show red message "FATAL ERROR: Missing SIP program!\n"
@@ -126,26 +123,29 @@ int OperatingSystem_LongTermScheduler() {
 	
 	for (i=0; programList[i]!=NULL && i<PROGRAMSMAXNUMBER ; i++) {
 		PID=OperatingSystem_CreateProcess(i);
-		switch(PID){
-			case(NOFREEENTRY):
-				ComputerSystem_DebugMessage(103, ERROR, programList[i] -> executableName);
-				break;
-			case(PROGRAMDOESNOTEXIST):
-				ComputerSystem_DebugMessage(104, ERROR, programList[i] -> executableName, "it does not exist");
-				break;
-			case(PROGRAMNOTVALID):
-				ComputerSystem_DebugMessage(104, ERROR, programList[i]->executableName, "invalid priority or size");
-				break;
-			case(TOOBIGPROCESS):
-				ComputerSystem_DebugMessage(105, ERROR, programList[i] -> executableName, "is too big");
-				break;
-			default: numberOfSuccessfullyCreatedProcesses++;
-				if (programList[i]->type==USERPROGRAM) 
-					numberOfNotTerminatedUserProcesses++;
-				// Move process to the ready state
-				OperatingSystem_MoveToTheREADYState(PID);
+		if (PID==NOFREEENTRY)
+		{
+			ComputerSystem_DebugMessage(103, ERROR, programList[i] -> executableName);
 		}
+		else if(PID==PROGRAMDOESNOTEXIST){
+			ComputerSystem_DebugMessage(104, ERROR, programList[i] -> executableName, "it does not exist");
+		}
+		else if(PID==PROGRAMNOTVALID){
+			ComputerSystem_DebugMessage(104, ERROR, programList[i]->executableName, "invalid priority or size");
+		}
+		else if(PID==TOOBIGPROCESS){
+			ComputerSystem_DebugMessage(105, ERROR, programList[i] -> executableName, "is too big");
+		}
+		else{
+			numberOfSuccessfullyCreatedProcesses++;
+			if (programList[i]->type==USERPROGRAM) 
+				numberOfNotTerminatedUserProcesses++;
+			// Move process to the ready state
+			OperatingSystem_MoveToTheREADYState(PID);
+		}
+		
 	}
+
 	// Return the number of succesfully created processes
 	return numberOfSuccessfullyCreatedProcesses;
 }
@@ -179,10 +179,7 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 	
 	// Obtain the priority for the process
 	priority=OperatingSystem_ObtainPriority(programFile);
-	if(priority==PROGRAMNOTVALID){
-		return PROGRAMNOTVALID;
-	}
-
+	
 	// Obtain enough memory space
  	if (processSize>MAINMEMORYSECTIONSIZE){
 		return TOOBIGPROCESS;
@@ -199,10 +196,10 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 	
 	// PCB initialization
 	OperatingSystem_PCBInitialization(PID, loadingPhysicalAddress, processSize, priority, indexOfExecutableProgram);
-
+	
 	// Show message "Process [PID] created from program [executableName]\n"
 	ComputerSystem_DebugMessage(70,INIT,PID,executableProgram->executableName);
-
+	
 	return PID;
 }
 
@@ -348,7 +345,7 @@ void OperatingSystem_TerminateProcess() {
 	if (numberOfNotTerminatedUserProcesses==0) {
 		if (executingProcessID==sipID) {
 			// finishing sipID, change PC to address of OS HALT instruction
-			OperatingSystem_TerminatingSIP();
+			Processor_CopyInSystemStack(MAINMEMORYSIZE-1,OS_address_base+1);
 			ComputerSystem_DebugMessage(99,SHUTDOWN,"The system will shut down now...\n");
 			return; // Don't dispatch any process
 		}

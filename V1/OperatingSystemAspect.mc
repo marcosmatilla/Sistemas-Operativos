@@ -924,6 +924,7 @@ int OperatingSystem_ObtainProgramSize(FILE **, char *);
 int OperatingSystem_ObtainPriority(FILE *);
 int OperatingSystem_LoadProgram(FILE *, int, int);
 void OperatingSystem_ReadyToShutdown();
+void OperatingSystem_TerminatingSIP();
 # 3 "OperatingSystem.c" 2
 # 1 "MMU.h" 1
 
@@ -2811,7 +2812,10 @@ void OperatingSystem_Initialize(int daemonsIndex) {
  OperatingSystem_PrepareDaemons(daemonsIndex);
 
 
- OperatingSystem_LongTermScheduler();
+ int process = OperatingSystem_LongTermScheduler();
+ if( process <= 1){
+  exit(1);
+ }
 
  if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
 
@@ -2859,31 +2863,31 @@ int OperatingSystem_LongTermScheduler() {
   numberOfSuccessfullyCreatedProcesses=0;
 
  for (i=0; programList[i]!=
-# 124 "OperatingSystem.c" 3 4
+# 127 "OperatingSystem.c" 3 4
                           ((void *)0) 
-# 124 "OperatingSystem.c"
+# 127 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
-  if (PID==-3)
-  {
-   ComputerSystem_DebugMessage(103, 'e', programList[i] -> executableName);
+  switch(PID){
+   case(-3):
+    ComputerSystem_DebugMessage(103, 'e', programList[i] -> executableName);
+    break;
+   case(-1):
+    ComputerSystem_DebugMessage(104, 'e', programList[i] -> executableName, "it does not exist");
+    break;
+   case(-2):
+    ComputerSystem_DebugMessage(104, 'e', programList[i]->executableName, "invalid priority or size");
+    break;
+   case(-4):
+    ComputerSystem_DebugMessage(105, 'e', programList[i] -> executableName, "is too big");
+    break;
+   default: numberOfSuccessfullyCreatedProcesses++;
+    if (programList[i]->type==USERPROGRAM)
+     numberOfNotTerminatedUserProcesses++;
+
+    OperatingSystem_MoveToTheREADYState(PID);
   }
-  else if(PID==-1){
-   ComputerSystem_DebugMessage(104, 'e', programList[i] -> executableName, "it does not exist");
-  }
-  else{
-   numberOfSuccessfullyCreatedProcesses++;
-   if (programList[i]->type==USERPROGRAM)
-    numberOfNotTerminatedUserProcesses++;
-
-   OperatingSystem_MoveToTheREADYState(PID);
-  }
-
-
-
-
  }
-
 
  return numberOfSuccessfullyCreatedProcesses;
 }
@@ -2915,13 +2919,25 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
  }
 
 
+
  priority=OperatingSystem_ObtainPriority(programFile);
+ if(priority==-2){
+  return -2;
+ }
 
 
+  if (processSize>(300 / (4 +1))){
+  return -4;
+ }
+ else{
   loadingPhysicalAddress=OperatingSystem_ObtainMainMemory(processSize, PID);
+ }
 
 
- OperatingSystem_LoadProgram(programFile, loadingPhysicalAddress, processSize);
+
+ if (-4==OperatingSystem_LoadProgram(programFile, loadingPhysicalAddress, processSize)){
+  return -4;
+ }
 
 
  OperatingSystem_PCBInitialization(PID, loadingPhysicalAddress, processSize, priority, indexOfExecutableProgram);
@@ -3074,7 +3090,7 @@ void OperatingSystem_TerminateProcess() {
  if (numberOfNotTerminatedUserProcesses==0) {
   if (executingProcessID==sipID) {
 
-   Processor_CopyInSystemStack(300 -1,OS_address_base+1);
+   OperatingSystem_TerminatingSIP();
    ComputerSystem_DebugMessage(99,'d',"The system will shut down now...\n");
    return;
   }
