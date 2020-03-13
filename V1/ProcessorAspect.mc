@@ -1022,9 +1022,12 @@ extern void funlockfile (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__)
 # 942 "/usr/include/stdio.h" 3 4
 
 # 6 "OperatingSystem.h" 2
-# 22 "OperatingSystem.h"
+# 23 "OperatingSystem.h"
 
-# 22 "OperatingSystem.h"
+# 23 "OperatingSystem.h"
+enum TypeOfReadyToRunProcessQueues { USERPROCESSQUEUE, DAEMONSQUEUE};
+
+
 enum ProgramTypes { USERPROGRAM, DAEMONPROGRAM };
 
 
@@ -1043,6 +1046,7 @@ typedef struct {
  int copyOfPCRegister;
  unsigned int copyOfPSWRegister;
  int programListIndex;
+ int queueID;
 } PCB;
 
 

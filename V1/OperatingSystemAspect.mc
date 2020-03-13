@@ -884,9 +884,12 @@ extern void funlockfile (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__)
 # 942 "/usr/include/stdio.h" 3 4
 
 # 6 "OperatingSystem.h" 2
-# 22 "OperatingSystem.h"
+# 23 "OperatingSystem.h"
 
-# 22 "OperatingSystem.h"
+# 23 "OperatingSystem.h"
+enum TypeOfReadyToRunProcessQueues { USERPROCESSQUEUE, DAEMONSQUEUE};
+
+
 enum ProgramTypes { USERPROGRAM, DAEMONPROGRAM };
 
 
@@ -905,6 +908,7 @@ typedef struct {
  int copyOfPCRegister;
  unsigned int copyOfPSWRegister;
  int programListIndex;
+ int queueID;
 } PCB;
 
 
@@ -2783,12 +2787,14 @@ int sipID;
 
 int initialPID=4 -1;
 
-
 int baseDaemonsInProgramList;
 
 
-heapItem readyToRunQueue[4];
-int numberOfReadyToRunProcesses=0;
+
+
+heapItem readyToRunQueue [2][4];
+int numberOfReadyToRunProcesses[2]={0,0};
+char * queueNames [2]={"USER","DAEMONS"};
 
 
 int numberOfNotTerminatedUserProcesses=0;
@@ -2868,9 +2874,9 @@ int OperatingSystem_LongTermScheduler() {
   numberOfSuccessfullyCreatedProcesses=0;
 
  for (i=0; programList[i]!=
-# 132 "OperatingSystem.c" 3 4
+# 134 "OperatingSystem.c" 3 4
                           ((void *)0) 
-# 132 "OperatingSystem.c"
+# 134 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
   switch(PID){
@@ -3018,7 +3024,12 @@ int OperatingSystem_ExtractFromReadyToRun() {
 
  int selectedProcess=-1;
 
- selectedProcess=Heap_poll(readyToRunQueue,1 ,&numberOfReadyToRunProcesses);
+ selectedProcess=Heap_poll(readyToRunQueue[USERPROCESSQUEUE],1 ,&numberOfReadyToRunProcesses[USERPROCESSQUEUE]);
+ if (selectedProcess < 0){
+  selectedProcess=Heap_poll(readyToRunQueue[DAEMONSQUEUE],1 ,&numberOfReadyToRunProcesses[DAEMONSQUEUE]);
+ }
+
+
 
 
  return selectedProcess;
@@ -3151,17 +3162,36 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 
 
 void OperatingSystem_PrintReadyToRunQueue(){
- ComputerSystem_DebugMessage(106,'s');
- int i, PID;
- for(i=0;i<numberOfReadyToRunProcesses;i++){
-  PID = readyToRunQueue[i].info;
-  if(i==numberOfReadyToRunProcesses - 1){
-   ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority, "\n");
-  }
-  else{
-   ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,", ");
-  }
 
+ int i,PID,j;
+ ComputerSystem_DebugMessage(106,'s');
+ for(i=0; i<2; i++){
+  if(i==USERPROCESSQUEUE) {
+   if(numberOfReadyToRunProcesses[i] != 0)
+    ComputerSystem_DebugMessage(112,'s'," ");
+   else
+    ComputerSystem_DebugMessage(112,'s'," \n");
+   for(j=0; j<numberOfReadyToRunProcesses[i];j++){
+    PID=readyToRunQueue[i][j].info;
+    if(j==numberOfReadyToRunProcesses[i]-1)
+     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,"\n");
+    else
+     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,", ");
+   }
+  }
+  else if(i==DAEMONSQUEUE) {
+   if(numberOfReadyToRunProcesses[i] == 0)
+    ComputerSystem_DebugMessage(113,'s'," ");
+   else
+    ComputerSystem_DebugMessage(112,'s'," \n");
+   for(j=0; j<numberOfReadyToRunProcesses[i];j++){
+    PID=readyToRunQueue[i][j].info;
+    if(j==numberOfReadyToRunProcesses[i]-1)
+     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,"\n");
+    else
+     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,", ");
+   }
+  }
  }
 
 }

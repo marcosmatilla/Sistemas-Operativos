@@ -44,13 +44,15 @@ int sipID;
 
 // Initial PID for assignation
 int initialPID=PROCESSTABLEMAXSIZE-1;
-
 // Begin indes for daemons in programList
 int baseDaemonsInProgramList; 
 
 // Array that contains the identifiers of the READY processes
-heapItem readyToRunQueue[PROCESSTABLEMAXSIZE];
-int numberOfReadyToRunProcesses=0;
+//heapItem readyToRunQueue[PROCESSTABLEMAXSIZE];
+//int numberOfReadyToRunProcesses=0;
+heapItem readyToRunQueue [NUMBEROFQUEUES][PROCESSTABLEMAXSIZE];
+int numberOfReadyToRunProcesses[NUMBEROFQUEUES]={0,0};
+char * queueNames [NUMBEROFQUEUES]={"USER","DAEMONS"};
 
 // Variable containing the number of not terminated user processes
 int numberOfNotTerminatedUserProcesses=0;
@@ -276,7 +278,12 @@ int OperatingSystem_ExtractFromReadyToRun() {
   
 	int selectedProcess=NOPROCESS;
 
-	selectedProcess=Heap_poll(readyToRunQueue,QUEUE_PRIORITY ,&numberOfReadyToRunProcesses);
+	selectedProcess=Heap_poll(readyToRunQueue[USERPROCESSQUEUE],QUEUE_PRIORITY ,&numberOfReadyToRunProcesses[USERPROCESSQUEUE]);
+	if (selectedProcess < 0){
+		selectedProcess=Heap_poll(readyToRunQueue[DAEMONSQUEUE],QUEUE_PRIORITY ,&numberOfReadyToRunProcesses[DAEMONSQUEUE]);
+	}
+	
+	//selectedProcess=Heap_poll(readyToRunQueue,QUEUE_PRIORITY ,&numberOfReadyToRunProcesses);
 	
 	// Return most priority process or NOPROCESS if empty queue
 	return selectedProcess; 
@@ -409,17 +416,36 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 //verde se refieren a identificadores de procesos (PID’s) incluidos
 //	en cola y los números en color negro, serán sus prioridades.
 void OperatingSystem_PrintReadyToRunQueue(){
+	
+	int i,PID,j;
 	ComputerSystem_DebugMessage(106,SHORTTERMSCHEDULE);
-	int i, PID;
-	for(i=0;i<numberOfReadyToRunProcesses;i++){
-		PID = readyToRunQueue[i].info;
-		if(i==numberOfReadyToRunProcesses - 1){
-			ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority, "\n");
+	for(i=0; i<NUMBEROFQUEUES; i++){
+		if(i==USERPROCESSQUEUE) {
+			if(numberOfReadyToRunProcesses[i] != 0)
+				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE," ");
+			else
+				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE," \n");
+			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
+				PID=readyToRunQueue[i][j].info;
+				if(j==numberOfReadyToRunProcesses[i]-1)
+					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,"\n");
+				else
+					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,", ");
+			}
 		}
-		else{
-			ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,", ");
+		else if(i==DAEMONSQUEUE) {
+			if(numberOfReadyToRunProcesses[i] == 0)
+				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE," ");
+			else
+				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE," \n");
+			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
+				PID=readyToRunQueue[i][j].info;
+				if(j==numberOfReadyToRunProcesses[i]-1)
+					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,"\n");
+				else
+					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,", ");
+			}
 		}
-	
 	}
-	
+
 }
