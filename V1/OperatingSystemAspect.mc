@@ -3199,7 +3199,7 @@ void OperatingSystem_PrintReadyToRunQueue(){
    }
   }
   else if(i==DAEMONSQUEUE) {
-   if(numberOfReadyToRunProcesses[i] == 0)
+   if(numberOfReadyToRunProcesses[i] != 0)
     ComputerSystem_DebugMessage(113,'s'," ");
    else
     ComputerSystem_DebugMessage(113,'s'," \n");
@@ -3211,6 +3211,24 @@ void OperatingSystem_PrintReadyToRunQueue(){
      ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,", ");
    }
   }
- }
 
+
+ }
+ ComputerSystem_DebugMessage(108,'s');
+
+}
+
+void OperatingSystem_PrintReadyToRunQueue2(){
+ int i;
+ ComputerSystem_DebugMessage(106, 's');
+ ComputerSystem_DebugMessage(112,'s');
+ for (i=0; i<numberOfReadyToRunProcesses[USERPROCESSQUEUE];i++){
+  ComputerSystem_DebugMessage(107, 's',readyToRunQueue[USERPROCESSQUEUE][i].info,processTable[readyToRunQueue[USERPROCESSQUEUE][i].info].priority);
+ }
+ ComputerSystem_DebugMessage(108,'s');
+ ComputerSystem_DebugMessage(113,'s');
+ for (i=0; i<numberOfReadyToRunProcesses[DAEMONSQUEUE];i++){
+  ComputerSystem_DebugMessage(107, 's',readyToRunQueue[DAEMONSQUEUE][i].info,processTable[readyToRunQueue[DAEMONSQUEUE][i].info].priority);
+ }
+ ComputerSystem_DebugMessage(108,'s');
 }

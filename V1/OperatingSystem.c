@@ -435,7 +435,6 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 //verde se refieren a identificadores de procesos (PID’s) incluidos
 //	en cola y los números en color negro, serán sus prioridades.
 void OperatingSystem_PrintReadyToRunQueue(){
-	
 	int i,PID,j;
 	ComputerSystem_DebugMessage(106,SHORTTERMSCHEDULE);
 	for(i=0; i<NUMBEROFQUEUES; i++){
@@ -453,7 +452,7 @@ void OperatingSystem_PrintReadyToRunQueue(){
 			}
 		}
 		else if(i==DAEMONSQUEUE) {
-			if(numberOfReadyToRunProcesses[i] == 0)
+			if(numberOfReadyToRunProcesses[i] != 0)
 				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE," ");
 			else
 				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE," \n");
@@ -464,7 +463,23 @@ void OperatingSystem_PrintReadyToRunQueue(){
 				else
 					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,", ");
 			}
-		}
+		}		
 	}
+	ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
 
+}
+
+void OperatingSystem_PrintReadyToRunQueue2(){
+	int i;
+	ComputerSystem_DebugMessage(106, SHORTTERMSCHEDULE);
+	ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE);
+	for (i=0; i<numberOfReadyToRunProcesses[USERPROCESSQUEUE];i++){
+		ComputerSystem_DebugMessage(107, SHORTTERMSCHEDULE,readyToRunQueue[USERPROCESSQUEUE][i].info,processTable[readyToRunQueue[USERPROCESSQUEUE][i].info].priority);
+	}
+	ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
+	ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE);
+	for (i=0; i<numberOfReadyToRunProcesses[DAEMONSQUEUE];i++){
+		ComputerSystem_DebugMessage(107, SHORTTERMSCHEDULE,readyToRunQueue[DAEMONSQUEUE][i].info,processTable[readyToRunQueue[DAEMONSQUEUE][i].info].priority);
+	}
+	ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
 }

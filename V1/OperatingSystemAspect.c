@@ -2292,7 +2292,7 @@ int i,PID,j;
 ComputerSystem_DebugMessage(106, 's'); 
 #line 441 "OperatingSystem.c"
 for(i = 0;i < 2;i++) { { 
-#line 468 "OperatingSystem.c"
+#line 470 "OperatingSystem.c"
 if (i == USERPROCESSQUEUE){
 { 
 #line 446 "OperatingSystem.c"
@@ -2310,7 +2310,7 @@ ComputerSystem_DebugMessage(107, 's', PID, processTable[PID].priority, ", "); }}
 if (i == DAEMONSQUEUE){
 { 
 #line 459 "OperatingSystem.c"
-if (numberOfReadyToRunProcesses[i] == 0){
+if (numberOfReadyToRunProcesses[i] != 0){
 ComputerSystem_DebugMessage(113, 's', " "); }else{
 ComputerSystem_DebugMessage(113, 's', " \n"); }
 #line 460 "OperatingSystem.c"
@@ -2321,11 +2321,53 @@ PID = readyToRunQueue[i][j].info;
 if (j == numberOfReadyToRunProcesses[i] - 1){
 ComputerSystem_DebugMessage(107, 's', PID, processTable[PID].priority, "\n"); }else{
 ComputerSystem_DebugMessage(107, 's', PID, processTable[PID].priority, ", "); }} } } }}} } 
-# 2325 "OperatingSystemAspect.c"
+#line 471 "OperatingSystem.c"
+ComputerSystem_DebugMessage(108, 's'); 
+# 2327 "OperatingSystemAspect.c"
 
 }
 
-# 2329 "OperatingSystemAspect.c"
+# 2331 "OperatingSystemAspect.c"
+
+}
+ 
+#line 475 "OperatingSystem.c"
+void OperatingSystem_PrintReadyToRunQueue2()  
+# 2337 "OperatingSystemAspect.c"
+{
+
+
+
+# 2342 "OperatingSystemAspect.c"
+{
+
+#line 476 "OperatingSystem.c"
+
+#line 476 "OperatingSystem.c"
+int i;
+#line 477 "OperatingSystem.c"
+ComputerSystem_DebugMessage(106, 's'); 
+#line 478 "OperatingSystem.c"
+ComputerSystem_DebugMessage(112, 's'); 
+#line 479 "OperatingSystem.c"
+for(i = 0;i < numberOfReadyToRunProcesses[USERPROCESSQUEUE];i++) { { 
+#line 480 "OperatingSystem.c"
+ComputerSystem_DebugMessage(107, 's', readyToRunQueue[USERPROCESSQUEUE][i].info, processTable[readyToRunQueue[USERPROCESSQUEUE][i].info].priority); } } 
+#line 482 "OperatingSystem.c"
+ComputerSystem_DebugMessage(108, 's'); 
+#line 483 "OperatingSystem.c"
+ComputerSystem_DebugMessage(113, 's'); 
+#line 484 "OperatingSystem.c"
+for(i = 0;i < numberOfReadyToRunProcesses[DAEMONSQUEUE];i++) { { 
+#line 485 "OperatingSystem.c"
+ComputerSystem_DebugMessage(107, 's', readyToRunQueue[DAEMONSQUEUE][i].info, processTable[readyToRunQueue[DAEMONSQUEUE][i].info].priority); } } 
+#line 487 "OperatingSystem.c"
+ComputerSystem_DebugMessage(108, 's'); 
+# 2367 "OperatingSystemAspect.c"
+
+}
+
+# 2371 "OperatingSystemAspect.c"
 
 }
  
