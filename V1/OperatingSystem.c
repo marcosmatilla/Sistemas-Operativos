@@ -25,6 +25,7 @@ int OperatingSystem_ShortTermScheduler();
 int OperatingSystem_ExtractFromReadyToRun();
 void OperatingSystem_HandleException();
 void OperatingSystem_HandleSystemCall();
+void OperatingSystem_PrintReadyToRunQueue();
 
 // The process table
 PCB processTable[PROCESSTABLEMAXSIZE];
@@ -39,7 +40,7 @@ int executingProcessID=NOPROCESS;
 int sipID;
 
 // Initial PID for assignation
-int initialPID=0;
+int initialPID=PROCESSTABLEMAXSIZE-1;
 
 // Begin indes for daemons in programList
 int baseDaemonsInProgramList; 
@@ -247,6 +248,7 @@ void OperatingSystem_MoveToTheREADYState(int PID) {
 	if (Heap_add(PID, readyToRunQueue,QUEUE_PRIORITY ,&numberOfReadyToRunProcesses ,PROCESSTABLEMAXSIZE)>=0) {
 		processTable[PID].state=READY;
 	} 
+	OperatingSystem_PrintReadyToRunQueue();
 }
 
 
@@ -397,3 +399,21 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 
 }
 
+//muestra en pantalla el contenido de la cola de procesos LISTOS
+//verde se refieren a identificadores de procesos (PID’s) incluidos
+//	en cola y los números en color negro, serán sus prioridades.
+void OperatingSystem_PrintReadyToRunQueue(){
+	ComputerSystem_DebugMessage(106,SHORTTERMSCHEDULE);
+	int i, PID;
+	for(i=0;i<numberOfReadyToRunProcesses;i++){
+		PID = readyToRunQueue[i].info;
+		if(i==numberOfReadyToRunProcesses - 1){
+			ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority, "\n");
+		}
+		else{
+			ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,", ");
+		}
+	
+	}
+	
+}

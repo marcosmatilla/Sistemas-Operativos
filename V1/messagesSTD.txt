@@ -9,3 +9,5 @@
 103,There are not free entries in the process table for the program [@R%s@@]\n
 104,@RERROR: Program [@R%s] is not valid @R%s @@\n
 105,@RERROR: Program [@R%s] is too big @@\n
+106,Ready-to-run processes queue:\n
+107,\t[@G%d@@,%d]%s
