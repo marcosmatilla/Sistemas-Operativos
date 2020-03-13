@@ -17,3 +17,5 @@
 111,New process [@G%d - %s@@] moving to the [@GNEW@@] state\n
 112,\tUSER: 
 113,\tDAEMONS: 
+114,
+115,Process [@G%d@@] transfers control of the processor to process [@G%d@@]\n

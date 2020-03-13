@@ -203,6 +203,7 @@ void Processor_DecodeAndExecuteInstruction() {
 			registerPC_CPU++;
 			break;
 
+
 		// Instruction HALT
 		case HALT_INST: 
 			Processor_ActivatePSW_Bit(POWEROFF_BIT);

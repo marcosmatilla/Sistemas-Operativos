@@ -1034,7 +1034,7 @@ enum ProgramTypes { USERPROGRAM, DAEMONPROGRAM };
 enum ProcessStates { NEW, READY, EXECUTING, BLOCKED, EXIT};
 
 
-enum SystemCallIdentifiers { SYSCALL_END=3, SYSCALL_PRINTEXECPID=5};
+enum SystemCallIdentifiers { SYSCALL_END=3, SYSCALL_YIELD=4, SYSCALL_PRINTEXECPID=5};
 
 
 typedef struct {
@@ -1520,6 +1520,7 @@ void Processor_DecodeAndExecuteInstruction() {
    Processor_CheckOverflow(tempAcc,operand1);
    registerPC_CPU++;
    break;
+
 
 
   case HALT_INST:

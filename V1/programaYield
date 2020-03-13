@@ -1,0 +1,6 @@
+30
+80
+SUB 4 7
+TRAP 4
+ZJUMP 5
+TRAP 3

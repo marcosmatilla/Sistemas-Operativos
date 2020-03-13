@@ -62,6 +62,7 @@ int numberOfNotTerminatedUserProcesses=0;
 void OperatingSystem_Initialize(int daemonsIndex) {
 	
 	int i, selectedProcess;
+	int numberOfSuccessfullyCreatedProcesses=0;
 	FILE *programFile; // For load Operating System Code
 
 	// Obtain the memory requirements of the program
@@ -79,6 +80,7 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 		
 	// Include in program list  all system daemon processes
 	OperatingSystem_PrepareDaemons(daemonsIndex);
+	numberOfSuccessfullyCreatedProcesses=OperatingSystem_LongTermScheduler();
 	
 	// Create all user processes from the information given in the command line
 	int process = OperatingSystem_LongTermScheduler(); 
@@ -91,6 +93,10 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 		ComputerSystem_DebugMessage(99,SHUTDOWN,"FATAL ERROR: Missing SIP program!\n");
 		exit(1);		
 	}
+
+	if(numberOfSuccessfullyCreatedProcesses <= 1)
+		OperatingSystem_ReadyToShutdown();
+
 
 	// At least, one user process has been created
 	// Select the first process that is going to use the processor
@@ -380,7 +386,7 @@ void OperatingSystem_TerminateProcess() {
 // System call management routine
 void OperatingSystem_HandleSystemCall() {
   
-	int systemCallID;
+	int systemCallID, queueID;
 
 	// Register A contains the identifier of the issued system call
 	systemCallID=Processor_GetRegisterA();
@@ -396,7 +402,20 @@ void OperatingSystem_HandleSystemCall() {
 			ComputerSystem_DebugMessage(73,SYSPROC,executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
 			OperatingSystem_TerminateProcess();
 			break;
+		
+		case SYSCALL_YIELD:
+			queueID = processTable[executingProcessID].queueID;
+			if(numberOfReadyToRunProcesses[queueID]>0){
+				if(processTable[executingProcessID].priority == processTable[readyToRunQueue[queueID][0].info].priority){
+					ComputerSystem_DebugMessage(115,SYSPROC,executingProcessID, readyToRunQueue[queueID][0].info);
+					OperatingSystem_PreemptRunningProcess();
+					OperatingSystem_Dispatch(OperatingSystem_ShortTermScheduler());
+				}
+			}
+			break;
+			
 	}
+
 }
 	
 //	Implement interrupt logic calling appropriate interrupt handle
