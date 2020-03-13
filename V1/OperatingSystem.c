@@ -12,7 +12,7 @@
 // Functions prototypes
 void OperatingSystem_PrepareDaemons();
 void OperatingSystem_PCBInitialization(int, int, int, int, int);
-void OperatingSystem_MoveToTheREADYState(int);
+void OperatingSystem_MoveToTheREADYState(int,int);
 void OperatingSystem_Dispatch(int);
 void OperatingSystem_RestoreContext(int);
 void OperatingSystem_SaveContext(int);
@@ -62,7 +62,6 @@ int numberOfNotTerminatedUserProcesses=0;
 void OperatingSystem_Initialize(int daemonsIndex) {
 	
 	int i, selectedProcess;
-	int numberOfSuccessfullyCreatedProcesses=0;
 	FILE *programFile; // For load Operating System Code
 
 	// Obtain the memory requirements of the program
@@ -80,12 +79,13 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 		
 	// Include in program list  all system daemon processes
 	OperatingSystem_PrepareDaemons(daemonsIndex);
-	numberOfSuccessfullyCreatedProcesses=OperatingSystem_LongTermScheduler();
+
 	
 	// Create all user processes from the information given in the command line
 	int process = OperatingSystem_LongTermScheduler(); 
 	if( process <= 1){
-		exit(1);
+		OperatingSystem_ReadyToShutdown();
+		//exit(1);
 	}
 	
 	if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
@@ -93,10 +93,6 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 		ComputerSystem_DebugMessage(99,SHUTDOWN,"FATAL ERROR: Missing SIP program!\n");
 		exit(1);		
 	}
-
-	if(numberOfSuccessfullyCreatedProcesses <= 1)
-		OperatingSystem_ReadyToShutdown();
-
 
 	// At least, one user process has been created
 	// Select the first process that is going to use the processor
@@ -153,10 +149,14 @@ int OperatingSystem_LongTermScheduler() {
 				ComputerSystem_DebugMessage(105, ERROR, programList[i] -> executableName, "is too big");
 				break;
 			default: numberOfSuccessfullyCreatedProcesses++;
-				if (programList[i]->type==USERPROGRAM) 
+				if (programList[i]->type==USERPROGRAM) {
 					numberOfNotTerminatedUserProcesses++;
-				// Move process to the ready state
-				OperatingSystem_MoveToTheREADYState(PID);
+					// Move process to the ready state
+					OperatingSystem_MoveToTheREADYState(PID,USERPROCESSQUEUE);
+				}
+				else{
+					OperatingSystem_MoveToTheREADYState(PID,DAEMONSQUEUE);
+				}
 		}
 	}
 	// Return the number of succesfully created processes
@@ -256,9 +256,9 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
 
 // Move a process to the READY state: it will be inserted, depending on its priority, in
 // a queue of identifiers of READY processes
-void OperatingSystem_MoveToTheREADYState(int PID) {
+void OperatingSystem_MoveToTheREADYState(int PID, int queueuID) {
 	
-	if (Heap_add(PID, readyToRunQueue,QUEUE_PRIORITY ,&numberOfReadyToRunProcesses ,PROCESSTABLEMAXSIZE)>=0) {
+	if (Heap_add(PID, readyToRunQueue[queueuID],QUEUE_PRIORITY ,&numberOfReadyToRunProcesses[queueuID] ,PROCESSTABLEMAXSIZE)>=0) {
 		processTable[PID].state=READY;
 		ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName);
 	} 
@@ -327,7 +327,7 @@ void OperatingSystem_PreemptRunningProcess() {
 	// Save in the process' PCB essential values stored in hardware registers and the system stack
 	OperatingSystem_SaveContext(executingProcessID);
 	// Change the process' state
-	OperatingSystem_MoveToTheREADYState(executingProcessID);
+	OperatingSystem_MoveToTheREADYState(executingProcessID,processTable[executingProcessID].queueID);
 	// The processor is not assigned until the OS selects another process
 	executingProcessID=NOPROCESS;
 }
@@ -443,6 +443,7 @@ void OperatingSystem_PrintReadyToRunQueue(){
 				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE," ");
 			else
 				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE," \n");
+				ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
 			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
 				PID=readyToRunQueue[i][j].info;
 				if(j==numberOfReadyToRunProcesses[i]-1)
@@ -451,7 +452,7 @@ void OperatingSystem_PrintReadyToRunQueue(){
 					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,", ");
 			}
 		}
-		else if(i==DAEMONSQUEUE) {
+		if(i==DAEMONSQUEUE) {
 			if(numberOfReadyToRunProcesses[i] != 0)
 				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE," ");
 			else
@@ -467,19 +468,4 @@ void OperatingSystem_PrintReadyToRunQueue(){
 	}
 	ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
 
-}
-
-void OperatingSystem_PrintReadyToRunQueue2(){
-	int i;
-	ComputerSystem_DebugMessage(106, SHORTTERMSCHEDULE);
-	ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE);
-	for (i=0; i<numberOfReadyToRunProcesses[USERPROCESSQUEUE];i++){
-		ComputerSystem_DebugMessage(107, SHORTTERMSCHEDULE,readyToRunQueue[USERPROCESSQUEUE][i].info,processTable[readyToRunQueue[USERPROCESSQUEUE][i].info].priority);
-	}
-	ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
-	ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE);
-	for (i=0; i<numberOfReadyToRunProcesses[DAEMONSQUEUE];i++){
-		ComputerSystem_DebugMessage(107, SHORTTERMSCHEDULE,readyToRunQueue[DAEMONSQUEUE][i].info,processTable[readyToRunQueue[DAEMONSQUEUE][i].info].priority);
-	}
-	ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
 }

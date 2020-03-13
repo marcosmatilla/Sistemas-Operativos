@@ -2754,7 +2754,7 @@ extern int timespec_get (struct timespec *__ts, int __base)
 # 13 "OperatingSystem.c"
 void OperatingSystem_PrepareDaemons();
 void OperatingSystem_PCBInitialization(int, int, int, int, int);
-void OperatingSystem_MoveToTheREADYState(int);
+void OperatingSystem_MoveToTheREADYState(int,int);
 void OperatingSystem_Dispatch(int);
 void OperatingSystem_RestoreContext(int);
 void OperatingSystem_SaveContext(int);
@@ -2804,7 +2804,6 @@ int numberOfNotTerminatedUserProcesses=0;
 void OperatingSystem_Initialize(int daemonsIndex) {
 
  int i, selectedProcess;
- int numberOfSuccessfullyCreatedProcesses=0;
  FILE *programFile;
 
 
@@ -2822,12 +2821,13 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 
 
  OperatingSystem_PrepareDaemons(daemonsIndex);
- numberOfSuccessfullyCreatedProcesses=OperatingSystem_LongTermScheduler();
+
 
 
  int process = OperatingSystem_LongTermScheduler();
  if( process <= 1){
-  exit(1);
+  OperatingSystem_ReadyToShutdown();
+
  }
 
  if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
@@ -2835,10 +2835,6 @@ void OperatingSystem_Initialize(int daemonsIndex) {
   ComputerSystem_DebugMessage(99,'d',"FATAL ERROR: Missing SIP program!\n");
   exit(1);
  }
-
- if(numberOfSuccessfullyCreatedProcesses <= 1)
-  OperatingSystem_ReadyToShutdown();
-
 
 
 
@@ -2880,9 +2876,9 @@ int OperatingSystem_LongTermScheduler() {
   numberOfSuccessfullyCreatedProcesses=0;
 
  for (i=0; programList[i]!=
-# 140 "OperatingSystem.c" 3 4
+# 136 "OperatingSystem.c" 3 4
                           ((void *)0) 
-# 140 "OperatingSystem.c"
+# 136 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
   switch(PID){
@@ -2899,10 +2895,14 @@ int OperatingSystem_LongTermScheduler() {
     ComputerSystem_DebugMessage(105, 'e', programList[i] -> executableName, "is too big");
     break;
    default: numberOfSuccessfullyCreatedProcesses++;
-    if (programList[i]->type==USERPROGRAM)
+    if (programList[i]->type==USERPROGRAM) {
      numberOfNotTerminatedUserProcesses++;
 
-    OperatingSystem_MoveToTheREADYState(PID);
+     OperatingSystem_MoveToTheREADYState(PID,USERPROCESSQUEUE);
+    }
+    else{
+     OperatingSystem_MoveToTheREADYState(PID,DAEMONSQUEUE);
+    }
   }
  }
 
@@ -3002,9 +3002,9 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
 
 
 
-void OperatingSystem_MoveToTheREADYState(int PID) {
+void OperatingSystem_MoveToTheREADYState(int PID, int queueuID) {
 
- if (Heap_add(PID, readyToRunQueue,1 ,&numberOfReadyToRunProcesses ,4)>=0) {
+ if (Heap_add(PID, readyToRunQueue[queueuID],1 ,&numberOfReadyToRunProcesses[queueuID] ,4)>=0) {
   processTable[PID].state=READY;
   ComputerSystem_DebugMessage(110, 'p', PID, programList[processTable[PID].programListIndex]->executableName);
  }
@@ -3073,7 +3073,7 @@ void OperatingSystem_PreemptRunningProcess() {
 
  OperatingSystem_SaveContext(executingProcessID);
 
- OperatingSystem_MoveToTheREADYState(executingProcessID);
+ OperatingSystem_MoveToTheREADYState(executingProcessID,processTable[executingProcessID].queueID);
 
  executingProcessID=-1;
 }
@@ -3181,7 +3181,6 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 
 
 void OperatingSystem_PrintReadyToRunQueue(){
-
  int i,PID,j;
  ComputerSystem_DebugMessage(106,'s');
  for(i=0; i<2; i++){
@@ -3190,6 +3189,7 @@ void OperatingSystem_PrintReadyToRunQueue(){
     ComputerSystem_DebugMessage(112,'s'," ");
    else
     ComputerSystem_DebugMessage(112,'s'," \n");
+    ComputerSystem_DebugMessage(108,'s');
    for(j=0; j<numberOfReadyToRunProcesses[i];j++){
     PID=readyToRunQueue[i][j].info;
     if(j==numberOfReadyToRunProcesses[i]-1)
@@ -3198,7 +3198,7 @@ void OperatingSystem_PrintReadyToRunQueue(){
      ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,", ");
    }
   }
-  else if(i==DAEMONSQUEUE) {
+  if(i==DAEMONSQUEUE) {
    if(numberOfReadyToRunProcesses[i] != 0)
     ComputerSystem_DebugMessage(113,'s'," ");
    else
@@ -3211,24 +3211,7 @@ void OperatingSystem_PrintReadyToRunQueue(){
      ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,", ");
    }
   }
-
-
  }
  ComputerSystem_DebugMessage(108,'s');
 
-}
-
-void OperatingSystem_PrintReadyToRunQueue2(){
- int i;
- ComputerSystem_DebugMessage(106, 's');
- ComputerSystem_DebugMessage(112,'s');
- for (i=0; i<numberOfReadyToRunProcesses[USERPROCESSQUEUE];i++){
-  ComputerSystem_DebugMessage(107, 's',readyToRunQueue[USERPROCESSQUEUE][i].info,processTable[readyToRunQueue[USERPROCESSQUEUE][i].info].priority);
- }
- ComputerSystem_DebugMessage(108,'s');
- ComputerSystem_DebugMessage(113,'s');
- for (i=0; i<numberOfReadyToRunProcesses[DAEMONSQUEUE];i++){
-  ComputerSystem_DebugMessage(107, 's',readyToRunQueue[DAEMONSQUEUE][i].info,processTable[readyToRunQueue[DAEMONSQUEUE][i].info].priority);
- }
- ComputerSystem_DebugMessage(108,'s');
 }
