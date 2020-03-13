@@ -197,12 +197,8 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 	}
 
 	// Obtain enough memory space
- 	if (processSize>MAINMEMORYSECTIONSIZE){
-		return TOOBIGPROCESS;
-	}
-	else{
-		loadingPhysicalAddress=OperatingSystem_ObtainMainMemory(processSize, PID);
-	}
+	loadingPhysicalAddress=OperatingSystem_ObtainMainMemory(processSize, PID);
+	
 	 
 
 	// Load program in the allocated memory
