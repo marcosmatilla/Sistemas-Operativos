@@ -2766,6 +2766,9 @@ void OperatingSystem_HandleSystemCall();
 void OperatingSystem_PrintReadyToRunQueue();
 
 
+char * statesNames [5]={"NEW","READY","EXECUTING","BLOCKED","EXIT"};
+
+
 PCB processTable[4];
 
 
@@ -2789,6 +2792,7 @@ int numberOfReadyToRunProcesses=0;
 
 
 int numberOfNotTerminatedUserProcesses=0;
+
 
 
 void OperatingSystem_Initialize(int daemonsIndex) {
@@ -2864,9 +2868,9 @@ int OperatingSystem_LongTermScheduler() {
   numberOfSuccessfullyCreatedProcesses=0;
 
  for (i=0; programList[i]!=
-# 128 "OperatingSystem.c" 3 4
+# 132 "OperatingSystem.c" 3 4
                           ((void *)0) 
-# 128 "OperatingSystem.c"
+# 132 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
   switch(PID){
@@ -2968,6 +2972,7 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
  processTable[PID].initialPhysicalAddress=initialPhysicalAddress;
  processTable[PID].processSize=processSize;
  processTable[PID].state=NEW;
+ ComputerSystem_DebugMessage(111, 'p',PID,programList[processTable[PID].programListIndex]->executableName);
  processTable[PID].priority=priority;
  processTable[PID].programListIndex=processPLIndex;
 
@@ -2989,6 +2994,7 @@ void OperatingSystem_MoveToTheREADYState(int PID) {
 
  if (Heap_add(PID, readyToRunQueue,1 ,&numberOfReadyToRunProcesses ,4)>=0) {
   processTable[PID].state=READY;
+  ComputerSystem_DebugMessage(110, 'p', PID, programList[processTable[PID].programListIndex]->executableName);
  }
  OperatingSystem_PrintReadyToRunQueue();
 }

@@ -11,3 +11,7 @@
 105,@RERROR: Program [@R%s] is too big @@\n
 106,Ready-to-run processes queue:\n
 107,\t[@G%d@@,%d]%s
+108,
+109,
+110,Process [@G%d - %s@@] moving from the [@GREADY@@] state to the [@GEXECUTING@@] state\n
+111,New process [@G%d - %s@@] moving to the [@GNEW@@] state\n
