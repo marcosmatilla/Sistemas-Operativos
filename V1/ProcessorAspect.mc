@@ -1524,25 +1524,42 @@ void Processor_DecodeAndExecuteInstruction() {
 
 
   case HALT_INST:
-   Processor_ActivatePSW_Bit(POWEROFF_BIT);
+   if(Processor_PSW_BitState(EXECUTION_MODE_BIT)){
+    Processor_ActivatePSW_Bit(POWEROFF_BIT);
+   }
+   else
+   {
+    Processor_RaiseInterrupt(EXCEPTION_BIT);
+   }
    break;
 
 
   case OS_INST:
+   if(Processor_PSW_BitState(EXECUTION_MODE_BIT)){
 
 
-   ComputerSystem_DebugMessage(69, 'h',InstructionNames[operationCode],operand1,operand2,registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
+    ComputerSystem_DebugMessage(69, 'h',InstructionNames[operationCode],operand1,operand2,registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
 
-   OperatingSystem_InterruptLogic(operand1);
-   registerPC_CPU++;
+    OperatingSystem_InterruptLogic(operand1);
+    registerPC_CPU++;
 
-   Processor_UpdatePSW();
-   return;
+    Processor_UpdatePSW();
+    return;
+   }
+   else{
+    Processor_RaiseInterrupt(EXCEPTION_BIT);
+   }
+   break;
 
 
   case IRET_INST:
-   registerPC_CPU=Processor_CopyFromSystemStack(300 -1);
-   registerPSW_CPU=Processor_CopyFromSystemStack(300 -2);
+   if(Processor_PSW_BitState(EXECUTION_MODE_BIT)){
+    registerPC_CPU=Processor_CopyFromSystemStack(300 -1);
+    registerPSW_CPU=Processor_CopyFromSystemStack(300 -2);
+   }
+   else{
+    Processor_RaiseInterrupt(EXCEPTION_BIT);
+   }
    break;
 
 

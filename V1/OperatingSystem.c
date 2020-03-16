@@ -62,6 +62,7 @@ int numberOfNotTerminatedUserProcesses=0;
 void OperatingSystem_Initialize(int daemonsIndex) {
 	
 	int i, selectedProcess;
+	int numberOfSuccessfullyCreatedProcesses=0;
 	FILE *programFile; // For load Operating System Code
 
 	// Obtain the memory requirements of the program
@@ -82,16 +83,16 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 
 	
 	// Create all user processes from the information given in the command line
-	int process = OperatingSystem_LongTermScheduler(); 
-	if( process <= 1){
-		OperatingSystem_ReadyToShutdown();
-		//exit(1);
-	}
+	numberOfSuccessfullyCreatedProcesses = OperatingSystem_LongTermScheduler(); 
 	
 	if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
 		// Show red message "FATAL ERROR: Missing SIP program!\n"
 		ComputerSystem_DebugMessage(99,SHUTDOWN,"FATAL ERROR: Missing SIP program!\n");
 		exit(1);		
+	}
+
+	if( numberOfSuccessfullyCreatedProcesses <= 1){
+		OperatingSystem_ReadyToShutdown();
 	}
 
 	// At least, one user process has been created
@@ -198,8 +199,6 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 
 	// Obtain enough memory space
 	loadingPhysicalAddress=OperatingSystem_ObtainMainMemory(processSize, PID);
-	
-	 
 
 	// Load program in the allocated memory
 	if (TOOBIGPROCESS==OperatingSystem_LoadProgram(programFile, loadingPhysicalAddress, processSize)){
@@ -361,6 +360,7 @@ void OperatingSystem_TerminateProcess() {
 	if (programList[processTable[executingProcessID].programListIndex]->type==USERPROGRAM) 
 		// One more user process that has terminated
 		numberOfNotTerminatedUserProcesses--;
+
 	
 	if (numberOfNotTerminatedUserProcesses==0) {
 		if (executingProcessID==sipID) {
@@ -437,9 +437,10 @@ void OperatingSystem_PrintReadyToRunQueue(){
 		if(i==USERPROCESSQUEUE) {
 			if(numberOfReadyToRunProcesses[i] != 0)
 				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE," ");
-			else
+			else{
 				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE," \n");
 				ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
+			}
 			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
 				PID=readyToRunQueue[i][j].info;
 				if(j==numberOfReadyToRunProcesses[i]-1)
@@ -447,6 +448,7 @@ void OperatingSystem_PrintReadyToRunQueue(){
 				else
 					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,", ");
 			}
+			
 		}
 		if(i==DAEMONSQUEUE) {
 			if(numberOfReadyToRunProcesses[i] != 0)
