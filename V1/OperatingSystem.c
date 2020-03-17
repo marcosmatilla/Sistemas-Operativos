@@ -62,7 +62,6 @@ int numberOfNotTerminatedUserProcesses=0;
 void OperatingSystem_Initialize(int daemonsIndex) {
 	
 	int i, selectedProcess;
-	int numberOfSuccessfullyCreatedProcesses=0;
 	FILE *programFile; // For load Operating System Code
 
 	// Obtain the memory requirements of the program
@@ -83,18 +82,18 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 
 	
 	// Create all user processes from the information given in the command line
-	numberOfSuccessfullyCreatedProcesses = OperatingSystem_LongTermScheduler(); 
-	
+	OperatingSystem_LongTermScheduler(); 
+	if( numberOfNotTerminatedUserProcesses == 0){
+		OperatingSystem_ReadyToShutdown();
+	}
+
 	if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
 		// Show red message "FATAL ERROR: Missing SIP program!\n"
 		ComputerSystem_DebugMessage(99,SHUTDOWN,"FATAL ERROR: Missing SIP program!\n");
 		exit(1);		
 	}
 
-	if( numberOfSuccessfullyCreatedProcesses <= 1){
-		OperatingSystem_ReadyToShutdown();
-	}
-
+	
 	// At least, one user process has been created
 	// Select the first process that is going to use the processor
 	selectedProcess=OperatingSystem_ShortTermScheduler();

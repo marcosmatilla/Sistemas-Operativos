@@ -2804,7 +2804,6 @@ int numberOfNotTerminatedUserProcesses=0;
 void OperatingSystem_Initialize(int daemonsIndex) {
 
  int i, selectedProcess;
- int numberOfSuccessfullyCreatedProcesses=0;
  FILE *programFile;
 
 
@@ -2825,7 +2824,10 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 
 
 
- numberOfSuccessfullyCreatedProcesses = OperatingSystem_LongTermScheduler();
+ OperatingSystem_LongTermScheduler();
+ if( numberOfNotTerminatedUserProcesses == 0){
+  OperatingSystem_ReadyToShutdown();
+ }
 
  if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
 
@@ -2833,9 +2835,6 @@ void OperatingSystem_Initialize(int daemonsIndex) {
   exit(1);
  }
 
- if( numberOfSuccessfullyCreatedProcesses <= 1){
-  OperatingSystem_ReadyToShutdown();
- }
 
 
 
@@ -2877,9 +2876,9 @@ int OperatingSystem_LongTermScheduler() {
   numberOfSuccessfullyCreatedProcesses=0;
 
  for (i=0; programList[i]!=
-# 137 "OperatingSystem.c" 3 4
+# 136 "OperatingSystem.c" 3 4
                           ((void *)0) 
-# 137 "OperatingSystem.c"
+# 136 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
   switch(PID){
