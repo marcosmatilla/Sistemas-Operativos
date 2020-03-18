@@ -165,6 +165,7 @@ void ComputerSystem_DebugMessage(int, char , ...);
 
 
 extern char defaultDebugLevel[];
+extern int intervalBetweenInterrupts;
 # 6 "ComputerSystem.h" 2
 
 

@@ -27,6 +27,7 @@ void ComputerSystem_DebugMessage(int, char , ...);
 
 
 extern char defaultDebugLevel[];
+extern int intervalBetweenInterrupts;
 # 6 "ComputerSystem.h" 2
 
 
@@ -922,13 +923,62 @@ void OperatingSystem_Initialize();
 void OperatingSystem_InterruptLogic(int);
 # 2 "OperatingSystem.c" 2
 # 1 "OperatingSystemBase.h" 1
-# 9 "OperatingSystemBase.h"
+
+
+
+
+
+# 1 "Heap.h" 1
+
+
+
+
+
+
+
+typedef struct {
+ int info;
+ unsigned int insertionOrder;
+} heapItem;
+# 20 "Heap.h"
+int Heap_poll(heapItem[], int, int*);
+# 30 "Heap.h"
+int Heap_add(int, heapItem[], int , int*, int);
+
+
+
+
+
+
+int Heap_compare(heapItem, heapItem, int);
+
+
+
+
+
+int Heap_getFirst(heapItem[], int);
+# 7 "OperatingSystemBase.h" 2
+
+
+
 int OperatingSystem_ObtainAnEntryInTheProcessTable();
 int OperatingSystem_ObtainProgramSize(FILE **, char *);
 int OperatingSystem_ObtainPriority(FILE *);
 int OperatingSystem_LoadProgram(FILE *, int, int);
 void OperatingSystem_ReadyToShutdown();
 void OperatingSystem_TerminatingSIP();
+void OperatingSystem_ShowTime(char);
+void OperatingSystem_PrintStatus();
+void OperatingSystem_PrintReadyToRunQueue();
+void OperatingSystem_PrepareTeachersDaemons();
+
+
+
+
+
+
+
+extern int baseDaemonsInProgramList;
 # 3 "OperatingSystem.c" 2
 # 1 "MMU.h" 1
 
@@ -1077,31 +1127,7 @@ int Processor_GetCTRL();
 void Processor_SetCTRL(int);
 # 5 "OperatingSystem.c" 2
 
-# 1 "Heap.h" 1
 
-
-
-
-
-
-typedef struct {
- int info;
- unsigned int insertionOrder;
-} heapItem;
-# 19 "Heap.h"
-int Heap_poll(heapItem[], int, int*);
-# 29 "Heap.h"
-int Heap_add(int, heapItem[], int , int*, int);
-
-
-
-
-
-
-int Heap_compare(heapItem, heapItem, int);
-
-int Heap_getFirst(heapItem[], int);
-# 7 "OperatingSystem.c" 2
 # 1 "/usr/include/string.h" 1 3 4
 # 27 "/usr/include/string.h" 3 4
 
