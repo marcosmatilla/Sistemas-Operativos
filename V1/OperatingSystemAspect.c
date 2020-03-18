@@ -2207,7 +2207,7 @@ process = OperatingSystem_ExtractFromReadyToRun(queueID);
 #line 405 "OperatingSystem.c"
 if (executingProcessID != process){
 { 
-#line 412 "OperatingSystem.c"
+#line 411 "OperatingSystem.c"
 if (processTable[executingProcessID].priority == processTable[process].priority){
 { 
 #line 407 "OperatingSystem.c"
@@ -2216,7 +2216,7 @@ ComputerSystem_DebugMessage(115, 's', processTable[executingProcessID].programLi
 OperatingSystem_PreemptRunningProcess(); 
 #line 409 "OperatingSystem.c"
 OperatingSystem_Dispatch(process); } }} }} }
-#line 415 "OperatingSystem.c"
+#line 414 "OperatingSystem.c"
 break; } } 
 # 2222 "OperatingSystemAspect.c"
 
@@ -2229,7 +2229,7 @@ break; } }
   void __utac_acc__Aspect__3 (void);
 
 
-#line 422 "OperatingSystem.c"
+#line 421 "OperatingSystem.c"
 void OperatingSystem_InterruptLogic(int entryPoint)  
 # 2235 "OperatingSystemAspect.c"
 {
@@ -2244,15 +2244,15 @@ __utac_acc__Aspect__3();
 # 2245 "OperatingSystemAspect.c"
 {
 
-#line 430 "OperatingSystem.c"
-switch(entryPoint){ { 
-#line 425 "OperatingSystem.c"
-case SYSCALL_BIT: OperatingSystem_HandleSystemCall(); 
-#line 426 "OperatingSystem.c"
-break; 
-#line 427 "OperatingSystem.c"
-case EXCEPTION_BIT: OperatingSystem_HandleException(); 
 #line 429 "OperatingSystem.c"
+switch(entryPoint){ { 
+#line 424 "OperatingSystem.c"
+case SYSCALL_BIT: OperatingSystem_HandleSystemCall(); 
+#line 425 "OperatingSystem.c"
+break; 
+#line 426 "OperatingSystem.c"
+case EXCEPTION_BIT: OperatingSystem_HandleException(); 
+#line 428 "OperatingSystem.c"
 break; } } 
 # 2258 "OperatingSystemAspect.c"
 
@@ -2262,7 +2262,7 @@ break; } }
 
 }
  
-#line 437 "OperatingSystem.c"
+#line 436 "OperatingSystem.c"
 void OperatingSystem_PrintReadyToRunQueue()  
 # 2268 "OperatingSystemAspect.c"
 {
@@ -2272,49 +2272,49 @@ void OperatingSystem_PrintReadyToRunQueue()
 # 2273 "OperatingSystemAspect.c"
 {
 
-#line 438 "OperatingSystem.c"
+#line 437 "OperatingSystem.c"
 
-#line 438 "OperatingSystem.c"
+#line 437 "OperatingSystem.c"
 int i,PID,j;
-#line 439 "OperatingSystem.c"
+#line 438 "OperatingSystem.c"
 ComputerSystem_DebugMessage(106, 's'); 
-#line 440 "OperatingSystem.c"
+#line 439 "OperatingSystem.c"
 for(i = 0;i < 2;i++) { { 
-#line 457 "OperatingSystem.c"
+#line 456 "OperatingSystem.c"
 if (i == USERPROCESSQUEUE){
 { 
-#line 447 "OperatingSystem.c"
+#line 446 "OperatingSystem.c"
 if (numberOfReadyToRunProcesses[i] != 0){
 ComputerSystem_DebugMessage(112, 's', " "); }else{
 { 
-#line 445 "OperatingSystem.c"
+#line 444 "OperatingSystem.c"
 ComputerSystem_DebugMessage(112, 's', " \n"); 
-#line 446 "OperatingSystem.c"
+#line 445 "OperatingSystem.c"
 ComputerSystem_DebugMessage(108, 's'); } }
-#line 448 "OperatingSystem.c"
+#line 447 "OperatingSystem.c"
 for(j = 0;j < numberOfReadyToRunProcesses[i];j++) { { 
-#line 449 "OperatingSystem.c"
+#line 448 "OperatingSystem.c"
 PID = readyToRunQueue[i][j].info; 
-#line 450 "OperatingSystem.c"
+#line 449 "OperatingSystem.c"
 if (j == numberOfReadyToRunProcesses[i] - 1){
 ComputerSystem_DebugMessage(107, 's', PID, processTable[PID].priority, "\n"); }else{
 ComputerSystem_DebugMessage(107, 's', PID, processTable[PID].priority, ", "); }} } } }
-#line 457 "OperatingSystem.c"
+#line 456 "OperatingSystem.c"
 if (i == DAEMONSQUEUE){
 { 
-#line 461 "OperatingSystem.c"
+#line 460 "OperatingSystem.c"
 if (numberOfReadyToRunProcesses[i] != 0){
 ComputerSystem_DebugMessage(113, 's', " "); }else{
 ComputerSystem_DebugMessage(113, 's', " \n"); }
-#line 462 "OperatingSystem.c"
+#line 461 "OperatingSystem.c"
 for(j = 0;j < numberOfReadyToRunProcesses[i];j++) { { 
-#line 463 "OperatingSystem.c"
+#line 462 "OperatingSystem.c"
 PID = readyToRunQueue[i][j].info; 
-#line 464 "OperatingSystem.c"
+#line 463 "OperatingSystem.c"
 if (j == numberOfReadyToRunProcesses[i] - 1){
 ComputerSystem_DebugMessage(107, 's', PID, processTable[PID].priority, "\n"); }else{
 ComputerSystem_DebugMessage(107, 's', PID, processTable[PID].priority, ", "); }} } } }} } 
-#line 471 "OperatingSystem.c"
+#line 470 "OperatingSystem.c"
 ComputerSystem_DebugMessage(108, 's'); 
 # 2320 "OperatingSystemAspect.c"
 
