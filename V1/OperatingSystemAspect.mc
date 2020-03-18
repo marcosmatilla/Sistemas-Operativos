@@ -2996,9 +2996,9 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
 
 
 
-void OperatingSystem_MoveToTheREADYState(int PID, int queueuID) {
+void OperatingSystem_MoveToTheREADYState(int PID, int queueID) {
 
- if (Heap_add(PID, readyToRunQueue[queueuID],1 ,&numberOfReadyToRunProcesses[queueuID] ,4)>=0) {
+ if (Heap_add(PID, readyToRunQueue[queueID],1 ,&numberOfReadyToRunProcesses[queueID] ,4)>=0) {
   processTable[PID].state=READY;
   ComputerSystem_DebugMessage(110, 'p', PID, programList[processTable[PID].programListIndex]->executableName);
  }
@@ -3127,7 +3127,7 @@ void OperatingSystem_TerminateProcess() {
 
 void OperatingSystem_HandleSystemCall() {
 
- int systemCallID, queueID;
+ int systemCallID, queueID, process;
 
 
  systemCallID=Processor_GetRegisterA();
@@ -3147,11 +3147,16 @@ void OperatingSystem_HandleSystemCall() {
   case SYSCALL_YIELD:
    queueID = processTable[executingProcessID].queueID;
    if(numberOfReadyToRunProcesses[queueID]>0){
-    if(processTable[executingProcessID].priority == processTable[readyToRunQueue[queueID][0].info].priority){
-     ComputerSystem_DebugMessage(115,'p',executingProcessID, readyToRunQueue[queueID][0].info);
-     OperatingSystem_PreemptRunningProcess();
-     OperatingSystem_Dispatch(OperatingSystem_ShortTermScheduler());
+    process = OperatingSystem_ExtractFromReadyToRun(queueID);
+    if(executingProcessID!=process){
+     if(processTable[executingProcessID].priority == processTable[process].priority){
+      ComputerSystem_DebugMessage(115,'s',processTable[executingProcessID].programListIndex, processTable[process].programListIndex);
+      OperatingSystem_PreemptRunningProcess();
+      OperatingSystem_Dispatch(process);
+     }
+
     }
+
    }
    break;
 

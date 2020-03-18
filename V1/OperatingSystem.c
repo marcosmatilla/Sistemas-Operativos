@@ -381,7 +381,7 @@ void OperatingSystem_TerminateProcess() {
 // System call management routine
 void OperatingSystem_HandleSystemCall() {
   
-	int systemCallID, queueID;
+	int systemCallID, queueID, process;
 
 	// Register A contains the identifier of the issued system call
 	systemCallID=Processor_GetRegisterA();
@@ -401,11 +401,16 @@ void OperatingSystem_HandleSystemCall() {
 		case SYSCALL_YIELD:
 			queueID = processTable[executingProcessID].queueID;
 			if(numberOfReadyToRunProcesses[queueID]>0){
-				if(processTable[executingProcessID].priority == processTable[readyToRunQueue[queueID][0].info].priority){
-					ComputerSystem_DebugMessage(115,SYSPROC,executingProcessID, readyToRunQueue[queueID][0].info);
-					OperatingSystem_PreemptRunningProcess();
-					OperatingSystem_Dispatch(OperatingSystem_ShortTermScheduler());
+				process = OperatingSystem_ExtractFromReadyToRun(queueID);
+				if(executingProcessID!=process){
+					if(processTable[executingProcessID].priority == processTable[process].priority){
+						ComputerSystem_DebugMessage(115,SHORTTERMSCHEDULE,processTable[executingProcessID].programListIndex, processTable[process].programListIndex);
+						OperatingSystem_PreemptRunningProcess();
+						OperatingSystem_Dispatch(process);
+					}
+					//numberOfReadyToRunProcesses[queueID]++;
 				}
+				
 			}
 			break;
 			
