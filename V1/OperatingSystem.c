@@ -250,9 +250,9 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
 
 // Move a process to the READY state: it will be inserted, depending on its priority, in
 // a queue of identifiers of READY processes
-void OperatingSystem_MoveToTheREADYState(int PID, int queueuID) {
+void OperatingSystem_MoveToTheREADYState(int PID, int queueID) {
 	
-	if (Heap_add(PID, readyToRunQueue[queueuID],QUEUE_PRIORITY ,&numberOfReadyToRunProcesses[queueuID] ,PROCESSTABLEMAXSIZE)>=0) {
+	if (Heap_add(PID, readyToRunQueue[queueID],QUEUE_PRIORITY ,&numberOfReadyToRunProcesses[queueID] ,PROCESSTABLEMAXSIZE)>=0) {
 		processTable[PID].state=READY;
 		ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName);
 	} 

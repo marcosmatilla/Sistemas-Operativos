@@ -1,0 +1,4 @@
+Estudia lo que hace la función OperatingSystem_TerminateProcess y en particular lo que pasa
+cuando el que termina es el SystemIdleProcess
+	Termina los procesos cuando todo ha ido correctamente. Cambia el estado del proceso en ejecución en la tabla de procesos a EXIT y nos muestra
+		el mensaje de final de programa con sus diferentes parametros.

@@ -1,0 +1,11 @@
+a)¿Por qué hace falta salvar el valor actual del registro PC del procesador y de la PSW?
+	Se necesitan para poder retomar la ejecución desde el punto exacto en el que estaba si fuese necesario.
+b)¿Sería necesario salvar algún valor más? 
+	Sí, el del acumulador.
+c)A la vista de lo contestado en los apartados a) y b) anteriores, ¿sería 
+necesario realizar alguna modificación en la función 
+OperatingSystem_RestoreContext()? ¿Por qué? 
+	Sí, restaurar el valor del acumulador.
+d)¿Afectarían los cambios anteriores a la implementación de alguna otra función 
+o a la definición de alguna estructura de datos? 
+	Habría que añadir copyOfAccumulator al pcb.
