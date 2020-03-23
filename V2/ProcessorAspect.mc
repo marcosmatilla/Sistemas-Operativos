@@ -1363,7 +1363,7 @@ void Processor_InitializeInterruptVectorTable(int interruptVectorInitialAddress)
 
  interruptVectorTable[SYSCALL_BIT]=interruptVectorInitialAddress;
  interruptVectorTable[EXCEPTION_BIT]=interruptVectorInitialAddress+2;
-
+ interruptVectorTable[CLOCKINT_BIT]=interruptVectorInitialAddress+4;
 }
 
 

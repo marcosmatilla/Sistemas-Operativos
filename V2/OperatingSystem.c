@@ -28,7 +28,9 @@ void OperatingSystem_HandleSystemCall();
 void OperatingSystem_PrintReadyToRunQueue();
 void OperatingSystem_HandleClockInterrupt(); 
 
-
+//ex-4
+//Number of clock interruptions
+int numberOfClockInterrupts = 0;
 
 //procesos
 char * statesNames [5]={"NEW","READY","EXECUTING","BLOCKED","EXIT"};
@@ -500,6 +502,11 @@ void OperatingSystem_PrintReadyToRunQueue(){
 //ex-2 V2
 // In OperatingSystem.c Exercise 2-b of V2
 void OperatingSystem_HandleClockInterrupt(){ 
-	return; 
+	//ex-4 V2
+	
+	OperatingSystem_ShowTime(INTERRUPT);
+	numberOfClockInterrupts++;
+	ComputerSystem_DebugMessage(120, INTERRUPT, numberOfClockInterrupts);
+
 }
 //end ex-2 V2

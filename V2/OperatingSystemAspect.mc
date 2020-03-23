@@ -1112,7 +1112,7 @@ int Processor_ToInstruction(char *);
 
 
 
-enum PSW_BITS {POWEROFF_BIT=0, ZERO_BIT=1, NEGATIVE_BIT=2, OVERFLOW_BIT=3, EXECUTION_MODE_BIT=7};
+enum PSW_BITS {POWEROFF_BIT=0, ZERO_BIT=1, NEGATIVE_BIT=2, OVERFLOW_BIT=3, EXECUTION_MODE_BIT=7, INTERRUPT_MASKED_BIT=15};
 
 
 
@@ -2799,6 +2799,8 @@ void OperatingSystem_HandleClockInterrupt();
 
 
 
+int numberOfClockInterrupts = 0;
+
 
 char * statesNames [5]={"NEW","READY","EXECUTING","BLOCKED","EXIT"};
 
@@ -2907,9 +2909,9 @@ int OperatingSystem_LongTermScheduler() {
   numberOfSuccessfullyCreatedProcesses=0;
 
  for (i=0; programList[i]!=
-# 140 "OperatingSystem.c" 3 4
+# 142 "OperatingSystem.c" 3 4
                           ((void *)0) 
-# 140 "OperatingSystem.c"
+# 142 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
   switch(PID){
@@ -3273,5 +3275,10 @@ void OperatingSystem_PrintReadyToRunQueue(){
 
 
 void OperatingSystem_HandleClockInterrupt(){
- return;
+
+
+ OperatingSystem_ShowTime('i');
+ numberOfClockInterrupts++;
+ ComputerSystem_DebugMessage(120, 'i', numberOfClockInterrupts);
+
 }
