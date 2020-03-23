@@ -2855,6 +2855,7 @@ void OperatingSystem_Initialize(int daemonsIndex) {
   OperatingSystem_ReadyToShutdown();
  }
 
+
  if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
 
   ComputerSystem_DebugMessage(99,'d',"FATAL ERROR: Missing SIP program!\n");
@@ -2902,9 +2903,9 @@ int OperatingSystem_LongTermScheduler() {
   numberOfSuccessfullyCreatedProcesses=0;
 
  for (i=0; programList[i]!=
-# 136 "OperatingSystem.c" 3 4
+# 137 "OperatingSystem.c" 3 4
                           ((void *)0) 
-# 136 "OperatingSystem.c"
+# 137 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
   switch(PID){
@@ -3011,10 +3012,12 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
  if (programList[processPLIndex]->type == DAEMONPROGRAM) {
   processTable[PID].copyOfPCRegister=initialPhysicalAddress;
   processTable[PID].copyOfPSWRegister= ((unsigned int) 1) << EXECUTION_MODE_BIT;
+  processTable[PID].queueID = DAEMONSQUEUE;
  }
  else {
   processTable[PID].copyOfPCRegister=0;
   processTable[PID].copyOfPSWRegister=0;
+  processTable[PID].queueID = USERPROCESSQUEUE;
  }
 
 }
@@ -3176,7 +3179,7 @@ void OperatingSystem_HandleSystemCall() {
     process = OperatingSystem_ExtractFromReadyToRun(queueID);
     if(executingProcessID!=process){
      if(processTable[executingProcessID].priority == processTable[process].priority){
-      ComputerSystem_DebugMessage(115,'s',processTable[executingProcessID].programListIndex, processTable[process].programListIndex);
+      ComputerSystem_DebugMessage(115,'s',processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
       OperatingSystem_PreemptRunningProcess();
       OperatingSystem_Dispatch(process);
      }
@@ -3184,6 +3187,7 @@ void OperatingSystem_HandleSystemCall() {
 
    }
    break;
+
 
  }
 
@@ -3205,6 +3209,7 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 
 
 
+
 void OperatingSystem_PrintReadyToRunQueue(){
  int i,PID,j;
  ComputerSystem_DebugMessage(106,'s');
@@ -3212,33 +3217,26 @@ void OperatingSystem_PrintReadyToRunQueue(){
   if(i==USERPROCESSQUEUE) {
    if(numberOfReadyToRunProcesses[i] != 0)
     ComputerSystem_DebugMessage(112,'s'," ");
-   else{
-    ComputerSystem_DebugMessage(112,'s'," \n");
-    ComputerSystem_DebugMessage(108,'s');
-   }
    for(j=0; j<numberOfReadyToRunProcesses[i];j++){
     PID=readyToRunQueue[i][j].info;
     if(j==numberOfReadyToRunProcesses[i]-1)
      ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,"\n");
     else
-     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,", ");
+     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,",");
    }
 
   }
   if(i==DAEMONSQUEUE) {
-   if(numberOfReadyToRunProcesses[i] != 0)
-    ComputerSystem_DebugMessage(113,'s'," ");
-   else
-    ComputerSystem_DebugMessage(113,'s'," \n");
+   ComputerSystem_DebugMessage(113,'s');
    for(j=0; j<numberOfReadyToRunProcesses[i];j++){
     PID=readyToRunQueue[i][j].info;
     if(j==numberOfReadyToRunProcesses[i]-1)
      ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,"\n");
     else
-     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,", ");
+     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,",");
    }
   }
  }
- ComputerSystem_DebugMessage(108,'s');
+
 
 }

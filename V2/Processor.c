@@ -203,7 +203,7 @@ void Processor_DecodeAndExecuteInstruction() {
 			registerPC_CPU++;
 			break;
 
-
+		//ex-16
 		// Instruction HALT
 		case HALT_INST: 
 			if(Processor_PSW_BitState(EXECUTION_MODE_BIT)){
@@ -243,6 +243,7 @@ void Processor_DecodeAndExecuteInstruction() {
 				Processor_RaiseInterrupt(EXCEPTION_BIT);
 			}
 			break;		
+		//end ex-16
 
 		// Unknown instruction
 		default : 

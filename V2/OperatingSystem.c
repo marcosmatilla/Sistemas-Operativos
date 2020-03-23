@@ -80,12 +80,13 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 	// Include in program list  all system daemon processes
 	OperatingSystem_PrepareDaemons(daemonsIndex);
 
-	
+	//ex-15
 	// Create all user processes from the information given in the command line
 	OperatingSystem_LongTermScheduler(); 
 	if( numberOfNotTerminatedUserProcesses == 0){
 		OperatingSystem_ReadyToShutdown();
 	}
+	//end ex-15
 
 	if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
 		// Show red message "FATAL ERROR: Missing SIP program!\n"
@@ -239,10 +240,12 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
 	if (programList[processPLIndex]->type == DAEMONPROGRAM) {
 		processTable[PID].copyOfPCRegister=initialPhysicalAddress;
 		processTable[PID].copyOfPSWRegister= ((unsigned int) 1) << EXECUTION_MODE_BIT;
+		processTable[PID].queueID = DAEMONSQUEUE;
 	} 
 	else {
 		processTable[PID].copyOfPCRegister=0;
 		processTable[PID].copyOfPSWRegister=0;
+		processTable[PID].queueID = USERPROCESSQUEUE;
 	}
 
 }
@@ -397,14 +400,14 @@ void OperatingSystem_HandleSystemCall() {
 			ComputerSystem_DebugMessage(73,SYSPROC,executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
 			OperatingSystem_TerminateProcess();
 			break;
-		
+		//ex-12
 		case SYSCALL_YIELD:
 			queueID = processTable[executingProcessID].queueID;
 			if(numberOfReadyToRunProcesses[queueID]>0){
 				process = OperatingSystem_ExtractFromReadyToRun(queueID);
 				if(executingProcessID!=process){
 					if(processTable[executingProcessID].priority == processTable[process].priority){
-						ComputerSystem_DebugMessage(115,SHORTTERMSCHEDULE,processTable[executingProcessID].programListIndex, processTable[process].programListIndex);
+						ComputerSystem_DebugMessage(115,SHORTTERMSCHEDULE,processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
 						OperatingSystem_PreemptRunningProcess();
 						OperatingSystem_Dispatch(process);
 					}
@@ -412,6 +415,7 @@ void OperatingSystem_HandleSystemCall() {
 				
 			}
 			break;
+		//end ex-12
 			
 	}
 
@@ -430,6 +434,7 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 
 }
 
+//ex-11
 //muestra en pantalla el contenido de la cola de procesos LISTOS
 //verde se refieren a identificadores de procesos (PID’s) incluidos
 //	en cola y los números en color negro, serán sus prioridades.
@@ -440,33 +445,27 @@ void OperatingSystem_PrintReadyToRunQueue(){
 		if(i==USERPROCESSQUEUE) {
 			if(numberOfReadyToRunProcesses[i] != 0)
 				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE," ");
-			else{
-				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE," \n");
-				ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
-			}
 			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
 				PID=readyToRunQueue[i][j].info;
 				if(j==numberOfReadyToRunProcesses[i]-1)
 					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,"\n");
 				else
-					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,", ");
+					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,",");
 			}
 			
 		}
 		if(i==DAEMONSQUEUE) {
-			if(numberOfReadyToRunProcesses[i] != 0)
-				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE," ");
-			else
-				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE," \n");
+			ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE);
 			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
 				PID=readyToRunQueue[i][j].info;
 				if(j==numberOfReadyToRunProcesses[i]-1)
 					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,"\n");
 				else
-					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,", ");
+					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,",");
 			}
 		}		
 	}
-	ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
+
 
 }
+//end ex-11
