@@ -43,6 +43,7 @@ void Processor_InitializeInterruptVectorTable(int interruptVectorInitialAddress)
 
 	interruptVectorTable[SYSCALL_BIT]=interruptVectorInitialAddress;  // SYSCALL_BIT=2
 	interruptVectorTable[EXCEPTION_BIT]=interruptVectorInitialAddress+2; // EXCEPTION_BIT=6
+	
 }
 
 
@@ -305,3 +306,4 @@ char * Processor_ShowPSW(){
 void Processor_ShowTime(char section) {
 	ComputerSystem_DebugMessage(Processor_PSW_BitState(EXECUTION_MODE_BIT)?94:95,section,Clock_GetTime());
 }
+

@@ -26,6 +26,8 @@ int OperatingSystem_ExtractFromReadyToRun();
 void OperatingSystem_HandleException();
 void OperatingSystem_HandleSystemCall();
 void OperatingSystem_PrintReadyToRunQueue();
+void OperatingSystem_HandleClockInterrupt(); 
+
 
 
 //procesos
@@ -443,6 +445,9 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 		case EXCEPTION_BIT: // EXCEPTION_BIT=6
 			OperatingSystem_HandleException();
 			break;
+		case CLOCKINT_BIT: //EXCEPTION_BIT=9 
+			OperatingSystem_HandleClockInterrupt();
+			break;
 	}
 
 }
@@ -491,3 +496,10 @@ void OperatingSystem_PrintReadyToRunQueue(){
 
 }
 //end ex-11
+
+//ex-2 V2
+// In OperatingSystem.c Exercise 2-b of V2
+void OperatingSystem_HandleClockInterrupt(){ 
+	return; 
+}
+//end ex-2 V2

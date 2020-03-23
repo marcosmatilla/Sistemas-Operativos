@@ -1116,7 +1116,7 @@ enum PSW_BITS {POWEROFF_BIT=0, ZERO_BIT=1, NEGATIVE_BIT=2, OVERFLOW_BIT=3, EXECU
 
 
 
-enum INT_BITS {SYSCALL_BIT=2, EXCEPTION_BIT=6};
+enum INT_BITS {SYSCALL_BIT=2, EXCEPTION_BIT=6, CLOCKINT_BIT=9};
 
 
 void Processor_InitializeInterruptVectorTable();
@@ -2795,6 +2795,8 @@ int OperatingSystem_ExtractFromReadyToRun();
 void OperatingSystem_HandleException();
 void OperatingSystem_HandleSystemCall();
 void OperatingSystem_PrintReadyToRunQueue();
+void OperatingSystem_HandleClockInterrupt();
+
 
 
 
@@ -2905,9 +2907,9 @@ int OperatingSystem_LongTermScheduler() {
   numberOfSuccessfullyCreatedProcesses=0;
 
  for (i=0; programList[i]!=
-# 138 "OperatingSystem.c" 3 4
+# 140 "OperatingSystem.c" 3 4
                           ((void *)0) 
-# 138 "OperatingSystem.c"
+# 140 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
   switch(PID){
@@ -3216,6 +3218,9 @@ void OperatingSystem_InterruptLogic(int entryPoint){
   case EXCEPTION_BIT:
    OperatingSystem_HandleException();
    break;
+  case CLOCKINT_BIT:
+   OperatingSystem_HandleClockInterrupt();
+   break;
  }
 
 }
@@ -3262,4 +3267,11 @@ void OperatingSystem_PrintReadyToRunQueue(){
  }
 
 
+}
+
+
+
+
+void OperatingSystem_HandleClockInterrupt(){
+ return;
 }

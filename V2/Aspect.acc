@@ -9,6 +9,8 @@
 
 
 
+
+
 void Clock_Update();
 int Clock_GetTime();
 # 2 "MyAspect.c" 2
