@@ -33,7 +33,8 @@ extern int intervalBetweenInterrupts;
 
 void ComputerSystem_PowerOn(int argc, char *argv[], int);
 void ComputerSystem_PowerOff();
-# 33 "ComputerSystem.h"
+void OperatingSystem_ShowTime(char);
+# 34 "ComputerSystem.h"
 typedef struct ProgramData {
     char *executableName;
     unsigned int arrivalTime;
@@ -2796,6 +2797,7 @@ void OperatingSystem_HandleSystemCall();
 void OperatingSystem_PrintReadyToRunQueue();
 
 
+
 char * statesNames [5]={"NEW","READY","EXECUTING","BLOCKED","EXIT"};
 
 
@@ -2903,22 +2905,26 @@ int OperatingSystem_LongTermScheduler() {
   numberOfSuccessfullyCreatedProcesses=0;
 
  for (i=0; programList[i]!=
-# 137 "OperatingSystem.c" 3 4
+# 138 "OperatingSystem.c" 3 4
                           ((void *)0) 
-# 137 "OperatingSystem.c"
+# 138 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
   switch(PID){
    case(-3):
+    OperatingSystem_ShowTime('e');
     ComputerSystem_DebugMessage(103, 'e', programList[i] -> executableName);
     break;
    case(-1):
+    OperatingSystem_ShowTime('e');
     ComputerSystem_DebugMessage(104, 'e', programList[i] -> executableName, "it does not exist");
     break;
    case(-2):
+    OperatingSystem_ShowTime('e');
     ComputerSystem_DebugMessage(104, 'e', programList[i]->executableName, "invalid priority or size");
     break;
    case(-4):
+    OperatingSystem_ShowTime('e');
     ComputerSystem_DebugMessage(105, 'e', programList[i] -> executableName, "is too big");
     break;
    default: numberOfSuccessfullyCreatedProcesses++;
@@ -2981,6 +2987,7 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
  OperatingSystem_PCBInitialization(PID, loadingPhysicalAddress, processSize, priority, indexOfExecutableProgram);
 
 
+ OperatingSystem_ShowTime('t');
  ComputerSystem_DebugMessage(70,'t',PID,executableProgram->executableName);
 
  return PID;
@@ -3005,6 +3012,7 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
  processTable[PID].initialPhysicalAddress=initialPhysicalAddress;
  processTable[PID].processSize=processSize;
  processTable[PID].state=NEW;
+ OperatingSystem_ShowTime('p');
  ComputerSystem_DebugMessage(111, 'p',PID,programList[processTable[PID].programListIndex]->executableName);
  processTable[PID].priority=priority;
  processTable[PID].programListIndex=processPLIndex;
@@ -3029,6 +3037,7 @@ void OperatingSystem_MoveToTheREADYState(int PID, int queueID) {
 
  if (Heap_add(PID, readyToRunQueue[queueID],1 ,&numberOfReadyToRunProcesses[queueID] ,4)>=0) {
   processTable[PID].state=READY;
+  OperatingSystem_ShowTime('p');
   ComputerSystem_DebugMessage(110, 'p', PID, programList[processTable[PID].programListIndex]->executableName);
  }
  OperatingSystem_PrintReadyToRunQueue();
@@ -3118,6 +3127,7 @@ void OperatingSystem_SaveContext(int PID) {
 void OperatingSystem_HandleException() {
 
 
+ OperatingSystem_ShowTime('p');
  ComputerSystem_DebugMessage(71,'p',executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
 
  OperatingSystem_TerminateProcess();
@@ -3140,6 +3150,7 @@ void OperatingSystem_TerminateProcess() {
   if (executingProcessID==sipID) {
 
    OperatingSystem_TerminatingSIP();
+   OperatingSystem_ShowTime('d');
    ComputerSystem_DebugMessage(99,'d',"The system will shut down now...\n");
    return;
   }
@@ -3164,11 +3175,13 @@ void OperatingSystem_HandleSystemCall() {
  switch (systemCallID) {
   case SYSCALL_PRINTEXECPID:
 
+   OperatingSystem_ShowTime('p');
    ComputerSystem_DebugMessage(72,'p',executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
    break;
 
   case SYSCALL_END:
 
+   OperatingSystem_ShowTime('p');
    ComputerSystem_DebugMessage(73,'p',executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
    OperatingSystem_TerminateProcess();
    break;
@@ -3179,6 +3192,7 @@ void OperatingSystem_HandleSystemCall() {
     process = OperatingSystem_ExtractFromReadyToRun(queueID);
     if(executingProcessID!=process){
      if(processTable[executingProcessID].priority == processTable[process].priority){
+      OperatingSystem_ShowTime('s');
       ComputerSystem_DebugMessage(115,'s',processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
       OperatingSystem_PreemptRunningProcess();
       OperatingSystem_Dispatch(process);
@@ -3212,28 +3226,37 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 
 void OperatingSystem_PrintReadyToRunQueue(){
  int i,PID,j;
+ OperatingSystem_ShowTime('s');
  ComputerSystem_DebugMessage(106,'s');
  for(i=0; i<2; i++){
   if(i==USERPROCESSQUEUE) {
-   if(numberOfReadyToRunProcesses[i] != 0)
-    ComputerSystem_DebugMessage(112,'s'," ");
+   if(numberOfReadyToRunProcesses[i] != 0){
+    ComputerSystem_DebugMessage(112,'s');
+   }
+   else{
+    ComputerSystem_DebugMessage(112,'s');
+    ComputerSystem_DebugMessage(108,'s');
+   }
    for(j=0; j<numberOfReadyToRunProcesses[i];j++){
     PID=readyToRunQueue[i][j].info;
-    if(j==numberOfReadyToRunProcesses[i]-1)
+    if(j==numberOfReadyToRunProcesses[i]-1){
      ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,"\n");
-    else
+    }
+    else{
      ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,",");
+    }
    }
-
   }
   if(i==DAEMONSQUEUE) {
    ComputerSystem_DebugMessage(113,'s');
    for(j=0; j<numberOfReadyToRunProcesses[i];j++){
     PID=readyToRunQueue[i][j].info;
-    if(j==numberOfReadyToRunProcesses[i]-1)
+    if(j==numberOfReadyToRunProcesses[i]-1){
      ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,"\n");
-    else
+    }
+    else{
      ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,",");
+    }
    }
   }
  }

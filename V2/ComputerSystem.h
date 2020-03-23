@@ -7,6 +7,7 @@
 // Functions prototypes
 void ComputerSystem_PowerOn(int argc, char *argv[], int);
 void ComputerSystem_PowerOff();
+void OperatingSystem_ShowTime(char);
 
 // Sections in which we divide our simulator in terms of
 // debugging messages that show its internal working details

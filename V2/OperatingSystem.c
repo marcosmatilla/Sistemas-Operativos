@@ -27,6 +27,7 @@ void OperatingSystem_HandleException();
 void OperatingSystem_HandleSystemCall();
 void OperatingSystem_PrintReadyToRunQueue();
 
+
 //procesos
 char * statesNames [5]={"NEW","READY","EXECUTING","BLOCKED","EXIT"};
 
@@ -138,15 +139,19 @@ int OperatingSystem_LongTermScheduler() {
 		PID=OperatingSystem_CreateProcess(i);
 		switch(PID){
 			case(NOFREEENTRY):
+				OperatingSystem_ShowTime(ERROR);
 				ComputerSystem_DebugMessage(103, ERROR, programList[i] -> executableName);
 				break;
 			case(PROGRAMDOESNOTEXIST):
+				OperatingSystem_ShowTime(ERROR);
 				ComputerSystem_DebugMessage(104, ERROR, programList[i] -> executableName, "it does not exist");
 				break;
 			case(PROGRAMNOTVALID):
+				OperatingSystem_ShowTime(ERROR);
 				ComputerSystem_DebugMessage(104, ERROR, programList[i]->executableName, "invalid priority or size");
 				break;
 			case(TOOBIGPROCESS):
+				OperatingSystem_ShowTime(ERROR);
 				ComputerSystem_DebugMessage(105, ERROR, programList[i] -> executableName, "is too big");
 				break;
 			default: numberOfSuccessfullyCreatedProcesses++;
@@ -209,6 +214,7 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 	OperatingSystem_PCBInitialization(PID, loadingPhysicalAddress, processSize, priority, indexOfExecutableProgram);
 
 	// Show message "Process [PID] created from program [executableName]\n"
+	OperatingSystem_ShowTime(INIT);
 	ComputerSystem_DebugMessage(70,INIT,PID,executableProgram->executableName);
 
 	return PID;
@@ -233,6 +239,7 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
 	processTable[PID].initialPhysicalAddress=initialPhysicalAddress;
 	processTable[PID].processSize=processSize;
 	processTable[PID].state=NEW;
+	OperatingSystem_ShowTime(SYSPROC);
 	ComputerSystem_DebugMessage(111, SYSPROC,PID,programList[processTable[PID].programListIndex]->executableName);
 	processTable[PID].priority=priority;
 	processTable[PID].programListIndex=processPLIndex;
@@ -257,6 +264,7 @@ void OperatingSystem_MoveToTheREADYState(int PID, int queueID) {
 	
 	if (Heap_add(PID, readyToRunQueue[queueID],QUEUE_PRIORITY ,&numberOfReadyToRunProcesses[queueID] ,PROCESSTABLEMAXSIZE)>=0) {
 		processTable[PID].state=READY;
+		OperatingSystem_ShowTime(SYSPROC);
 		ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName);
 	} 
 	OperatingSystem_PrintReadyToRunQueue();
@@ -346,6 +354,7 @@ void OperatingSystem_SaveContext(int PID) {
 void OperatingSystem_HandleException() {
   
 	// Show message "Process [executingProcessID] has generated an exception and is terminating\n"
+	OperatingSystem_ShowTime(SYSPROC);
 	ComputerSystem_DebugMessage(71,SYSPROC,executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
 	
 	OperatingSystem_TerminateProcess();
@@ -368,6 +377,7 @@ void OperatingSystem_TerminateProcess() {
 		if (executingProcessID==sipID) {
 			// finishing sipID, change PC to address of OS HALT instruction
 			OperatingSystem_TerminatingSIP();
+			OperatingSystem_ShowTime(SHUTDOWN);
 			ComputerSystem_DebugMessage(99,SHUTDOWN,"The system will shut down now...\n");
 			return; // Don't dispatch any process
 		}
@@ -392,11 +402,13 @@ void OperatingSystem_HandleSystemCall() {
 	switch (systemCallID) {
 		case SYSCALL_PRINTEXECPID:
 			// Show message: "Process [executingProcessID] has the processor assigned\n"
+			OperatingSystem_ShowTime(SYSPROC);
 			ComputerSystem_DebugMessage(72,SYSPROC,executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
 			break;
 
 		case SYSCALL_END:
 			// Show message: "Process [executingProcessID] has requested to terminate\n"
+			OperatingSystem_ShowTime(SYSPROC);
 			ComputerSystem_DebugMessage(73,SYSPROC,executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
 			OperatingSystem_TerminateProcess();
 			break;
@@ -407,6 +419,7 @@ void OperatingSystem_HandleSystemCall() {
 				process = OperatingSystem_ExtractFromReadyToRun(queueID);
 				if(executingProcessID!=process){
 					if(processTable[executingProcessID].priority == processTable[process].priority){
+						OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
 						ComputerSystem_DebugMessage(115,SHORTTERMSCHEDULE,processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
 						OperatingSystem_PreemptRunningProcess();
 						OperatingSystem_Dispatch(process);
@@ -440,28 +453,37 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 //	en cola y los números en color negro, serán sus prioridades.
 void OperatingSystem_PrintReadyToRunQueue(){
 	int i,PID,j;
+	OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
 	ComputerSystem_DebugMessage(106,SHORTTERMSCHEDULE);
 	for(i=0; i<NUMBEROFQUEUES; i++){
 		if(i==USERPROCESSQUEUE) {
-			if(numberOfReadyToRunProcesses[i] != 0)
-				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE," ");
+			if(numberOfReadyToRunProcesses[i] != 0){
+				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE);
+			}
+			else{
+				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE);
+				ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
+			}
 			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
 				PID=readyToRunQueue[i][j].info;
-				if(j==numberOfReadyToRunProcesses[i]-1)
+				if(j==numberOfReadyToRunProcesses[i]-1){
 					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,"\n");
-				else
+				}
+				else{
 					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,",");
+				}
 			}
-			
 		}
 		if(i==DAEMONSQUEUE) {
 			ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE);
 			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
 				PID=readyToRunQueue[i][j].info;
-				if(j==numberOfReadyToRunProcesses[i]-1)
+				if(j==numberOfReadyToRunProcesses[i]-1){
 					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,"\n");
-				else
+				}
+				else{
 					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,",");
+				}
 			}
 		}		
 	}

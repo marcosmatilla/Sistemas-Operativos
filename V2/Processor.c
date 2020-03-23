@@ -10,6 +10,8 @@
 int Processor_FetchInstruction();
 void Processor_DecodeAndExecuteInstruction();
 void Processor_ManageInterrupts();
+void Processor_ShowTime(char); //ex-1
+int Clock_GetTime();
 
 // External data
 extern char *InstructionNames[];
@@ -61,7 +63,7 @@ void Processor_InstructionCycleLoop() {
 
 // Fetch an instruction from main memory and put it in the IR register
 int Processor_FetchInstruction() {
-
+	Processor_ShowTime(HARDWARE);
 	// The instruction must be located at the logical memory address pointed by the PC register
 	registerMAR_CPU=registerPC_CPU;
 	// Send to the MMU the address in which the reading has to take place: use the address bus for this
@@ -300,3 +302,6 @@ char * Processor_ShowPSW(){
 
 /////////////////////////////////////////////////////////
 //  New functions below this line  //////////////////////
+void Processor_ShowTime(char section) {
+	ComputerSystem_DebugMessage(Processor_PSW_BitState(EXECUTION_MODE_BIT)?94:95,section,Clock_GetTime());
+}

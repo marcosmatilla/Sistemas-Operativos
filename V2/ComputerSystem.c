@@ -13,6 +13,8 @@
 // and all user programs specified in the command line
 PROGRAMS_DATA *programList[PROGRAMSMAXNUMBER];
 void ComputerSystem_PrintProgramList();
+void ComputerSystem_ShowTime(char); //ex-1
+int Clock_GetTime();
 
 
 // Powers on of the Computer System.
@@ -45,6 +47,7 @@ void ComputerSystem_PowerOn(int argc, char *argv[], int paramIndex) {
 // Powers off the CS (the C program ends)
 void ComputerSystem_PowerOff() {
 	// Show message in red colour: "END of the simulation\n" 
+	ComputerSystem_ShowTime(SHUTDOWN);
 	ComputerSystem_DebugMessage(99,SHUTDOWN,"END of the simulation\n"); 
 	exit(0);
 }
@@ -52,6 +55,7 @@ void ComputerSystem_PowerOff() {
 /////////////////////////////////////////////////////////
 //  New functions below this line  //////////////////////
 void ComputerSystem_PrintProgramList(){
+	ComputerSystem_ShowTime(INIT);
 	ComputerSystem_DebugMessage(101, INIT);
 	int i = 1;
 	while(i<PROGRAMSMAXNUMBER){
@@ -59,4 +63,8 @@ void ComputerSystem_PrintProgramList(){
 		ComputerSystem_DebugMessage(102, INIT, programList[i] -> executableName, programList[i] -> arrivalTime );
 		i++;
 	}
+}
+
+void ComputerSystem_ShowTime(char section) {
+	ComputerSystem_DebugMessage(Processor_PSW_BitState(EXECUTION_MODE_BIT)?94:95,section,Clock_GetTime());
 }

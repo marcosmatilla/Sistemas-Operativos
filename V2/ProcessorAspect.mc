@@ -171,7 +171,8 @@ extern int intervalBetweenInterrupts;
 
 void ComputerSystem_PowerOn(int argc, char *argv[], int);
 void ComputerSystem_PowerOff();
-# 33 "ComputerSystem.h"
+void OperatingSystem_ShowTime(char);
+# 34 "ComputerSystem.h"
 typedef struct ProgramData {
     char *executableName;
     unsigned int arrivalTime;
@@ -1329,6 +1330,8 @@ extern char *stpncpy (char *__restrict __dest,
 int Processor_FetchInstruction();
 void Processor_DecodeAndExecuteInstruction();
 void Processor_ManageInterrupts();
+void Processor_ShowTime(char);
+int Clock_GetTime();
 
 
 extern char *InstructionNames[];
@@ -1380,7 +1383,7 @@ void Processor_InstructionCycleLoop() {
 
 
 int Processor_FetchInstruction() {
-
+ Processor_ShowTime('h');
 
  registerMAR_CPU=registerPC_CPU;
 
@@ -1614,4 +1617,11 @@ char * Processor_ShowPSW(){
  if (Processor_PSW_BitState(POWEROFF_BIT))
   pswmask[tam-POWEROFF_BIT]='S';
  return pswmask;
+}
+
+
+
+
+void Processor_ShowTime(char section) {
+ ComputerSystem_DebugMessage(Processor_PSW_BitState(EXECUTION_MODE_BIT)?94:95,section,Clock_GetTime());
 }

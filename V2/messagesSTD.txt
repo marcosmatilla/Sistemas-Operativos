@@ -15,7 +15,7 @@
 109,
 110,Process [@G%d - %s@@] moving from the [@GREADY@@] state to the [@GEXECUTING@@] state\n
 111,New process [@G%d - %s@@] moving to the [@GNEW@@] state\n
-112,\tUSER:
-113,\tDAEMONS:
+112,\t\tUSER:
+113,\t\tDAEMONS:
 114,
 115,Process [@G%d - %s@@] transfers control of the processor to process [@G%d - %s@@]\n
