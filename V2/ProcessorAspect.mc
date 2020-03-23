@@ -127,7 +127,7 @@ int Processor_ToInstruction(char *);
 
 
 
-enum PSW_BITS {POWEROFF_BIT=0, ZERO_BIT=1, NEGATIVE_BIT=2, OVERFLOW_BIT=3, EXECUTION_MODE_BIT=7};
+enum PSW_BITS {POWEROFF_BIT=0, ZERO_BIT=1, NEGATIVE_BIT=2, OVERFLOW_BIT=3, EXECUTION_MODE_BIT=7, INTERRUPT_MASKED_BIT=15};
 
 
 
@@ -1376,7 +1376,7 @@ void Processor_InstructionCycleLoop() {
   if (Processor_FetchInstruction()==1){
    Processor_DecodeAndExecuteInstruction();
   }
-  if (interruptLines_CPU){
+  if (interruptLines_CPU && !Processor_PSW_BitState(INTERRUPT_MASKED_BIT)){
    Processor_ManageInterrupts();
   }
  }
@@ -1598,6 +1598,7 @@ void Processor_ManageInterrupts() {
     Processor_CopyInSystemStack(300 -2, registerPSW_CPU);
 
     Processor_ActivatePSW_Bit(EXECUTION_MODE_BIT);
+    Processor_ActivatePSW_Bit(INTERRUPT_MASKED_BIT);
 
     registerPC_CPU=interruptVectorTable[i];
     break;
@@ -1617,6 +1618,8 @@ char * Processor_ShowPSW(){
   pswmask[tam-ZERO_BIT]='Z';
  if (Processor_PSW_BitState(POWEROFF_BIT))
   pswmask[tam-POWEROFF_BIT]='S';
+ if (Processor_PSW_BitState(INTERRUPT_MASKED_BIT))
+  pswmask[tam-INTERRUPT_MASKED_BIT]='M';
  return pswmask;
 }
 

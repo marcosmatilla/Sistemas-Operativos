@@ -121,7 +121,7 @@ void Processor_GetCodedInstruction(char *,  BUSDATACELL );
 #line 60 "ProcessorBase.h"
 int Processor_ToInstruction(char *); 
 #line 13 "Processor.h"
-enum PSW_BITS {POWEROFF_BIT=0,ZERO_BIT=1,NEGATIVE_BIT=2,OVERFLOW_BIT=3,EXECUTION_MODE_BIT=7}; 
+enum PSW_BITS {POWEROFF_BIT=0,ZERO_BIT=1,NEGATIVE_BIT=2,OVERFLOW_BIT=3,EXECUTION_MODE_BIT=7,INTERRUPT_MASKED_BIT=15}; 
 #line 17 "Processor.h"
 enum INT_BITS {SYSCALL_BIT=2,EXCEPTION_BIT=6,CLOCKINT_BIT=9}; 
 #line 20 "Processor.h"
@@ -835,7 +835,7 @@ if (Processor_FetchInstruction() == 1){
 #line 57 "Processor.c"
 Processor_DecodeAndExecuteInstruction(); } }
 #line 59 "Processor.c"
-if (interruptLines_CPU){
+if (interruptLines_CPU && (!Processor_PSW_BitState(INTERRUPT_MASKED_BIT))){
 { 
 #line 60 "Processor.c"
 Processor_ManageInterrupts(); } }} } 
@@ -1159,87 +1159,92 @@ Processor_CopyInSystemStack(300 - 1, registerPC_CPU);
 Processor_CopyInSystemStack(300 - 2, registerPSW_CPU); 
 #line 280 "Processor.c"
 Processor_ActivatePSW_Bit(EXECUTION_MODE_BIT); 
-#line 282 "Processor.c"
-registerPC_CPU = interruptVectorTable[i]; 
+#line 281 "Processor.c"
+Processor_ActivatePSW_Bit(INTERRUPT_MASKED_BIT); 
 #line 283 "Processor.c"
+registerPC_CPU = interruptVectorTable[i]; 
+#line 284 "Processor.c"
 break; } }} 
-# 1167 "ProcessorAspect.c"
+# 1169 "ProcessorAspect.c"
 
 }
 
-# 1171 "ProcessorAspect.c"
+# 1173 "ProcessorAspect.c"
 
 }
  
-#line 287 "Processor.c"
+#line 288 "Processor.c"
 char *Processor_ShowPSW()  
-# 1177 "ProcessorAspect.c"
-{
 # 1179 "ProcessorAspect.c"
+{
+# 1181 "ProcessorAspect.c"
 char* retValue_acc;
 
 
 
 
-# 1185 "ProcessorAspect.c"
+# 1187 "ProcessorAspect.c"
 {
 
-#line 288 "Processor.c"
+#line 289 "Processor.c"
 strcpy(pswmask, "----------------"); 
-#line 289 "Processor.c"
-
-#line 289 "Processor.c"
-int tam = strlen(pswmask) - 1;
 #line 290 "Processor.c"
+
+#line 290 "Processor.c"
+int tam = strlen(pswmask) - 1;
+#line 291 "Processor.c"
 if (Processor_PSW_BitState(EXECUTION_MODE_BIT)){
 pswmask[tam - EXECUTION_MODE_BIT] = 'X'; }
-#line 292 "Processor.c"
+#line 293 "Processor.c"
 if (Processor_PSW_BitState(OVERFLOW_BIT)){
 pswmask[tam - OVERFLOW_BIT] = 'F'; }
-#line 294 "Processor.c"
+#line 295 "Processor.c"
 if (Processor_PSW_BitState(NEGATIVE_BIT)){
 pswmask[tam - NEGATIVE_BIT] = 'N'; }
-#line 296 "Processor.c"
+#line 297 "Processor.c"
 if (Processor_PSW_BitState(ZERO_BIT)){
 pswmask[tam - ZERO_BIT] = 'Z'; }
-#line 298 "Processor.c"
+#line 299 "Processor.c"
 if (Processor_PSW_BitState(POWEROFF_BIT)){
 pswmask[tam - POWEROFF_BIT] = 'S'; }
-#line 300 "Processor.c"
+#line 301 "Processor.c"
+if (Processor_PSW_BitState(INTERRUPT_MASKED_BIT)){
+pswmask[tam - INTERRUPT_MASKED_BIT] = 'M'; }
+#line 303 "Processor.c"
 
-# 1211 "ProcessorAspect.c"
-retValue_acc = pswmask;
-# 1213 "ProcessorAspect.c"
-return (char* )retValue_acc;
- 
 # 1216 "ProcessorAspect.c"
+retValue_acc = pswmask;
+# 1218 "ProcessorAspect.c"
+return (char* )retValue_acc;
+ 
+# 1221 "ProcessorAspect.c"
 
 }
 
-# 1220 "ProcessorAspect.c"
+# 1225 "ProcessorAspect.c"
 return (char* )retValue_acc;
 
-# 1223 "ProcessorAspect.c"
+# 1228 "ProcessorAspect.c"
 
 }
  
-#line 306 "Processor.c"
+#line 309 "Processor.c"
 void Processor_ShowTime(char section)  
-# 1229 "ProcessorAspect.c"
-{
-
-
-
 # 1234 "ProcessorAspect.c"
 {
 
-#line 307 "Processor.c"
-ComputerSystem_DebugMessage((Processor_PSW_BitState(EXECUTION_MODE_BIT)?94:95), section, Clock_GetTime()); 
+
+
 # 1239 "ProcessorAspect.c"
+{
+
+#line 310 "Processor.c"
+ComputerSystem_DebugMessage((Processor_PSW_BitState(EXECUTION_MODE_BIT)?94:95), section, Clock_GetTime()); 
+# 1244 "ProcessorAspect.c"
 
 }
 
-# 1243 "ProcessorAspect.c"
+# 1248 "ProcessorAspect.c"
 
 }
  
