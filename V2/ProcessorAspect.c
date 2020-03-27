@@ -614,27 +614,27 @@ extern void funlockfile( FILE *__stream) __attribute__  (( __nothrow__ , __leaf_
 # 912 "/usr/include/stdio.h" 3 4
 # 942 "/usr/include/stdio.h" 3 4
 # 6 "OperatingSystem.h" 2
-# 23 "OperatingSystem.h" 
-# 23 "OperatingSystem.h" 
+# 25 "OperatingSystem.h" 
+# 25 "OperatingSystem.h" 
 enum TypeOfReadyToRunProcessQueues {USERPROCESSQUEUE,DAEMONSQUEUE}; 
-#line 26 "OperatingSystem.h"
+#line 28 "OperatingSystem.h"
 enum ProgramTypes {USERPROGRAM,DAEMONPROGRAM}; 
-#line 29 "OperatingSystem.h"
+#line 31 "OperatingSystem.h"
 enum ProcessStates {NEW,READY,EXECUTING,BLOCKED,EXIT}; 
-#line 32 "OperatingSystem.h"
-enum SystemCallIdentifiers {SYSCALL_END=3,SYSCALL_YIELD=4,SYSCALL_PRINTEXECPID=5}; 
-#line 45 "OperatingSystem.h"
-typedef struct {int busy; int initialPhysicalAddress; int processSize; int state; int priority; int copyOfPCRegister; unsigned int copyOfPSWRegister; int programListIndex; int queueID; 
+#line 34 "OperatingSystem.h"
+enum SystemCallIdentifiers {SYSCALL_END=3,SYSCALL_YIELD=4,SYSCALL_PRINTEXECPID=5,SYSCALL_SLEEP=7}; 
+#line 48 "OperatingSystem.h"
+typedef struct {int busy; int initialPhysicalAddress; int processSize; int state; int priority; int copyOfPCRegister; unsigned int copyOfPSWRegister; int programListIndex; int queueID; int whenToWakeUp; 
 }PCB; 
-#line 49 "OperatingSystem.h"
+#line 52 "OperatingSystem.h"
 extern  PCB processTable[]; 
-#line 50 "OperatingSystem.h"
+#line 53 "OperatingSystem.h"
 extern int OS_address_base; 
-#line 51 "OperatingSystem.h"
-extern int sipID; 
 #line 54 "OperatingSystem.h"
+extern int sipID; 
+#line 57 "OperatingSystem.h"
 void OperatingSystem_Initialize(); 
-#line 55 "OperatingSystem.h"
+#line 58 "OperatingSystem.h"
 void OperatingSystem_InterruptLogic(int ); 
 # 4 "Processor.c" 2
 # 1 "/usr/include/string.h" 1 3 4
@@ -1241,7 +1241,7 @@ void Processor_ShowTime(char section)
 {
 
 #line 310 "Processor.c"
-ComputerSystem_DebugMessage((Processor_PSW_BitState(EXECUTION_MODE_BIT)?94:95), section, Clock_GetTime()); 
+ComputerSystem_DebugMessage((Processor_PSW_BitState(EXECUTION_MODE_BIT)?95:94), section, Clock_GetTime()); 
 # 1246 "ProcessorAspect.c"
 
 }

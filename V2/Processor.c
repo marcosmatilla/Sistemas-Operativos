@@ -307,6 +307,6 @@ char * Processor_ShowPSW(){
 /////////////////////////////////////////////////////////
 //  New functions below this line  //////////////////////
 void Processor_ShowTime(char section) {
-	ComputerSystem_DebugMessage(Processor_PSW_BitState(EXECUTION_MODE_BIT)?94:95,section,Clock_GetTime());
+	ComputerSystem_DebugMessage(Processor_PSW_BitState(EXECUTION_MODE_BIT)?95:94,section,Clock_GetTime());
 }
 

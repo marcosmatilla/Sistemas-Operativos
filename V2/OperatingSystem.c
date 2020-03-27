@@ -27,10 +27,19 @@ void OperatingSystem_HandleException();
 void OperatingSystem_HandleSystemCall();
 void OperatingSystem_PrintReadyToRunQueue();
 void OperatingSystem_HandleClockInterrupt(); 
-
+void OperatingSystem_MoveToTheBLOCKState();
+int OperatingSystem_ExtractFromBlocked();
+int OperatingSystem_CheckQueue();
+int OperatingSystem_ExtractFromBlocked();
+int OperatingSystem_CheckExecutingPriority(int);
 //ex-4
 //Number of clock interruptions
 int numberOfClockInterrupts = 0;
+
+// In OperatingSystem.c Exercise 5-b of V2
+// Heap with blocked processes sort by when to wakeup
+heapItem sleepingProcessesQueue[PROCESSTABLEMAXSIZE];
+int numberOfSleepingProcesses=0;
 
 //procesos
 char * statesNames [5]={"NEW","READY","EXECUTING","BLOCKED","EXIT"};
@@ -429,11 +438,17 @@ void OperatingSystem_HandleSystemCall() {
 						OperatingSystem_Dispatch(process);
 					}
 				}
-				
 			}
 			break;
 		//end ex-12
-			
+		//ex-5 V2
+		case SYSCALL_SLEEP:
+			OperatingSystem_MoveToTheBLOCKState();
+			process = OperatingSystem_ShortTermScheduler();
+           	OperatingSystem_Dispatch(process);
+			OperatingSystem_PrintStatus();
+			break;
+		//en ex-5 V2
 	}
 
 }
@@ -482,7 +497,12 @@ void OperatingSystem_PrintReadyToRunQueue(){
 			}
 		}
 		if(i==DAEMONSQUEUE) {
-			ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE);
+			if(numberOfReadyToRunProcesses[i] != 0)
+				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE);
+			else{
+				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE);
+				ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);	
+			}
 			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
 				PID=readyToRunQueue[i][j].info;
 				if(j==numberOfReadyToRunProcesses[i]-1){
@@ -502,11 +522,69 @@ void OperatingSystem_PrintReadyToRunQueue(){
 //ex-2 V2
 // In OperatingSystem.c Exercise 2-b of V2
 void OperatingSystem_HandleClockInterrupt(){ 
+	int process, changeQueue, queueToExecute;
 	//ex-4 V2
-	
 	OperatingSystem_ShowTime(INTERRUPT);
 	numberOfClockInterrupts++;
 	ComputerSystem_DebugMessage(120, INTERRUPT, numberOfClockInterrupts);
 
+	process = Heap_getFirst(sleepingProcessesQueue, numberOfSleepingProcesses);
+	while(processTable[process].whenToWakeUp==numberOfClockInterrupts){
+		OperatingSystem_ExtractFromBlocked();
+		OperatingSystem_MoveToTheREADYState(process,processTable[executingProcessID].queueID);
+		process=Heap_getFirst(sleepingProcessesQueue,numberOfSleepingProcesses);
+		OperatingSystem_PrintStatus();
+		queueToExecute = OperatingSystem_CheckQueue();
+		if(queueToExecute != -1) {
+			changeQueue = Heap_getFirst(readyToRunQueue[queueToExecute],numberOfReadyToRunProcesses[queueToExecute]);
+		
+			if(OperatingSystem_CheckExecutingPriority(changeQueue)){
+				OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
+				ComputerSystem_DebugMessage(121,SHORTTERMSCHEDULE,executingProcessID, programList[processTable[executingProcessID].programListIndex] -> executableName,changeQueue,programList[processTable[changeQueue].programListIndex] -> executableName);
+				OperatingSystem_PreemptRunningProcess();
+				OperatingSystem_Dispatch(OperatingSystem_ShortTermScheduler());
+				OperatingSystem_PrintStatus();  
+			}
+		}
+
+	}
+
 }
 //end ex-2 V2
+
+int OperatingSystem_ExtractFromBlocked() {
+	int selectedProcess=NOPROCESS;
+	selectedProcess=Heap_poll(sleepingProcessesQueue,QUEUE_WAKEUP ,&numberOfSleepingProcesses);
+	return selectedProcess; 
+}
+
+int OperatingSystem_CheckQueue(){
+	if (numberOfReadyToRunProcesses[USERPROCESSQUEUE] > 0) 
+		return USERPROCESSQUEUE;
+	else if (numberOfReadyToRunProcesses[DAEMONSQUEUE] > 0)
+		return DAEMONSQUEUE;
+	return -1;
+}
+
+int OperatingSystem_CheckExecutingPriority(int process){
+	
+	if((processTable[executingProcessID].queueID == processTable[process].queueID && 
+		processTable[process].priority < processTable[executingProcessID].priority) || 
+	   (processTable[executingProcessID].queueID != processTable[process].queueID && 
+		processTable[executingProcessID].queueID == DAEMONSQUEUE))
+		return 1;
+	else 
+		return 0;
+}
+
+//ex-5 V2
+void OperatingSystem_MoveToTheBLOCKState(){
+	if(Heap_add(executingProcessID, sleepingProcessesQueue, QUEUE_WAKEUP, &numberOfSleepingProcesses, PROCESSTABLEMAXSIZE)>=0){
+		processTable[executingProcessID].state=BLOCKED;
+		processTable[executingProcessID].whenToWakeUp = abs(Processor_GetAccumulator())+numberOfClockInterrupts+1;
+		OperatingSystem_ShowTime(SYSPROC);
+		ComputerSystem_DebugMessage(110, SYSPROC, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName);
+		OperatingSystem_SaveContext(executingProcessID);
+	}
+}
+//end ex-5 V2

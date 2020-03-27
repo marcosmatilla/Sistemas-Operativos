@@ -1024,9 +1024,9 @@ extern void funlockfile (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__)
 # 942 "/usr/include/stdio.h" 3 4
 
 # 6 "OperatingSystem.h" 2
-# 23 "OperatingSystem.h"
+# 25 "OperatingSystem.h"
 
-# 23 "OperatingSystem.h"
+# 25 "OperatingSystem.h"
 enum TypeOfReadyToRunProcessQueues { USERPROCESSQUEUE, DAEMONSQUEUE};
 
 
@@ -1036,7 +1036,7 @@ enum ProgramTypes { USERPROGRAM, DAEMONPROGRAM };
 enum ProcessStates { NEW, READY, EXECUTING, BLOCKED, EXIT};
 
 
-enum SystemCallIdentifiers { SYSCALL_END=3, SYSCALL_YIELD=4, SYSCALL_PRINTEXECPID=5};
+enum SystemCallIdentifiers { SYSCALL_END=3, SYSCALL_YIELD=4, SYSCALL_PRINTEXECPID=5, SYSCALL_SLEEP=7};
 
 
 typedef struct {
@@ -1049,6 +1049,7 @@ typedef struct {
  unsigned int copyOfPSWRegister;
  int programListIndex;
  int queueID;
+ int whenToWakeUp;
 } PCB;
 
 
@@ -1627,5 +1628,5 @@ char * Processor_ShowPSW(){
 
 
 void Processor_ShowTime(char section) {
- ComputerSystem_DebugMessage(Processor_PSW_BitState(EXECUTION_MODE_BIT)?94:95,section,Clock_GetTime());
+ ComputerSystem_DebugMessage(Processor_PSW_BitState(EXECUTION_MODE_BIT)?95:94,section,Clock_GetTime());
 }

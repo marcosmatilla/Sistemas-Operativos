@@ -541,27 +541,27 @@ extern void funlockfile( FILE *__stream) __attribute__  (( __nothrow__ , __leaf_
 # 912 "/usr/include/stdio.h" 3 4
 # 942 "/usr/include/stdio.h" 3 4
 # 6 "OperatingSystem.h" 2
-# 23 "OperatingSystem.h" 
-# 23 "OperatingSystem.h" 
+# 25 "OperatingSystem.h" 
+# 25 "OperatingSystem.h" 
 enum TypeOfReadyToRunProcessQueues {USERPROCESSQUEUE,DAEMONSQUEUE}; 
-#line 26 "OperatingSystem.h"
+#line 28 "OperatingSystem.h"
 enum ProgramTypes {USERPROGRAM,DAEMONPROGRAM}; 
-#line 29 "OperatingSystem.h"
+#line 31 "OperatingSystem.h"
 enum ProcessStates {NEW,READY,EXECUTING,BLOCKED,EXIT}; 
-#line 32 "OperatingSystem.h"
-enum SystemCallIdentifiers {SYSCALL_END=3,SYSCALL_YIELD=4,SYSCALL_PRINTEXECPID=5}; 
-#line 45 "OperatingSystem.h"
-typedef struct {int busy; int initialPhysicalAddress; int processSize; int state; int priority; int copyOfPCRegister; unsigned int copyOfPSWRegister; int programListIndex; int queueID; 
+#line 34 "OperatingSystem.h"
+enum SystemCallIdentifiers {SYSCALL_END=3,SYSCALL_YIELD=4,SYSCALL_PRINTEXECPID=5,SYSCALL_SLEEP=7}; 
+#line 48 "OperatingSystem.h"
+typedef struct {int busy; int initialPhysicalAddress; int processSize; int state; int priority; int copyOfPCRegister; unsigned int copyOfPSWRegister; int programListIndex; int queueID; int whenToWakeUp; 
 }PCB; 
-#line 49 "OperatingSystem.h"
+#line 52 "OperatingSystem.h"
 extern  PCB processTable[]; 
-#line 50 "OperatingSystem.h"
+#line 53 "OperatingSystem.h"
 extern int OS_address_base; 
-#line 51 "OperatingSystem.h"
-extern int sipID; 
 #line 54 "OperatingSystem.h"
+extern int sipID; 
+#line 57 "OperatingSystem.h"
 void OperatingSystem_Initialize(); 
-#line 55 "OperatingSystem.h"
+#line 58 "OperatingSystem.h"
 void OperatingSystem_InterruptLogic(int ); 
 # 6 "OperatingSystemBase.h" 2
 # 11 "Heap.h" 1
@@ -596,6 +596,10 @@ void OperatingSystem_PrintStatus();
 void OperatingSystem_PrintReadyToRunQueue(); 
 #line 19 "OperatingSystemBase.h"
 void OperatingSystem_PrepareTeachersDaemons(); 
+#line 22 "OperatingSystemBase.h"
+extern  heapItem sleepingProcessesQueue[]; 
+#line 23 "OperatingSystemBase.h"
+extern int numberOfSleepingProcesses; 
 #line 27 "OperatingSystemBase.h"
 extern int baseDaemonsInProgramList; 
 # 7 "OperatingSystemBase.h" 2

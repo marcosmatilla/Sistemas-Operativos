@@ -886,9 +886,9 @@ extern void funlockfile (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__)
 # 942 "/usr/include/stdio.h" 3 4
 
 # 6 "OperatingSystem.h" 2
-# 23 "OperatingSystem.h"
+# 25 "OperatingSystem.h"
 
-# 23 "OperatingSystem.h"
+# 25 "OperatingSystem.h"
 enum TypeOfReadyToRunProcessQueues { USERPROCESSQUEUE, DAEMONSQUEUE};
 
 
@@ -898,7 +898,7 @@ enum ProgramTypes { USERPROGRAM, DAEMONPROGRAM };
 enum ProcessStates { NEW, READY, EXECUTING, BLOCKED, EXIT};
 
 
-enum SystemCallIdentifiers { SYSCALL_END=3, SYSCALL_YIELD=4, SYSCALL_PRINTEXECPID=5};
+enum SystemCallIdentifiers { SYSCALL_END=3, SYSCALL_YIELD=4, SYSCALL_PRINTEXECPID=5, SYSCALL_SLEEP=7};
 
 
 typedef struct {
@@ -911,6 +911,7 @@ typedef struct {
  unsigned int copyOfPSWRegister;
  int programListIndex;
  int queueID;
+ int whenToWakeUp;
 } PCB;
 
 
@@ -974,8 +975,8 @@ void OperatingSystem_PrintReadyToRunQueue();
 void OperatingSystem_PrepareTeachersDaemons();
 
 
-
-
+extern heapItem sleepingProcessesQueue[];
+extern int numberOfSleepingProcesses;
 
 
 
@@ -2796,10 +2797,19 @@ void OperatingSystem_HandleException();
 void OperatingSystem_HandleSystemCall();
 void OperatingSystem_PrintReadyToRunQueue();
 void OperatingSystem_HandleClockInterrupt();
-
+void OperatingSystem_MoveToTheBLOCKState();
+int OperatingSystem_ExtractFromBlocked();
+int OperatingSystem_CheckQueue();
+int OperatingSystem_ExtractFromBlocked();
+int OperatingSystem_CheckExecutingPriority(int);
 
 
 int numberOfClockInterrupts = 0;
+
+
+
+heapItem sleepingProcessesQueue[4];
+int numberOfSleepingProcesses=0;
 
 
 char * statesNames [5]={"NEW","READY","EXECUTING","BLOCKED","EXIT"};
@@ -2909,9 +2919,9 @@ int OperatingSystem_LongTermScheduler() {
   numberOfSuccessfullyCreatedProcesses=0;
 
  for (i=0; programList[i]!=
-# 142 "OperatingSystem.c" 3 4
+# 151 "OperatingSystem.c" 3 4
                           ((void *)0) 
-# 142 "OperatingSystem.c"
+# 151 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
   switch(PID){
@@ -3202,10 +3212,16 @@ void OperatingSystem_HandleSystemCall() {
       OperatingSystem_Dispatch(process);
      }
     }
-
    }
    break;
 
+
+  case SYSCALL_SLEEP:
+   OperatingSystem_MoveToTheBLOCKState();
+   process = OperatingSystem_ShortTermScheduler();
+            OperatingSystem_Dispatch(process);
+   OperatingSystem_PrintStatus();
+   break;
 
  }
 
@@ -3255,7 +3271,12 @@ void OperatingSystem_PrintReadyToRunQueue(){
    }
   }
   if(i==DAEMONSQUEUE) {
-   ComputerSystem_DebugMessage(113,'s');
+   if(numberOfReadyToRunProcesses[i] != 0)
+    ComputerSystem_DebugMessage(113,'s');
+   else{
+    ComputerSystem_DebugMessage(113,'s');
+    ComputerSystem_DebugMessage(108,'s');
+   }
    for(j=0; j<numberOfReadyToRunProcesses[i];j++){
     PID=readyToRunQueue[i][j].info;
     if(j==numberOfReadyToRunProcesses[i]-1){
@@ -3275,10 +3296,68 @@ void OperatingSystem_PrintReadyToRunQueue(){
 
 
 void OperatingSystem_HandleClockInterrupt(){
-
+ int process, changeQueue, queueToExecute;
 
  OperatingSystem_ShowTime('i');
  numberOfClockInterrupts++;
  ComputerSystem_DebugMessage(120, 'i', numberOfClockInterrupts);
 
+ process = Heap_getFirst(sleepingProcessesQueue, numberOfSleepingProcesses);
+ while(processTable[process].whenToWakeUp==numberOfClockInterrupts){
+  OperatingSystem_ExtractFromBlocked();
+  OperatingSystem_MoveToTheREADYState(process,processTable[executingProcessID].queueID);
+  process=Heap_getFirst(sleepingProcessesQueue,numberOfSleepingProcesses);
+  OperatingSystem_PrintStatus();
+  queueToExecute = OperatingSystem_CheckQueue();
+  if(queueToExecute != -1) {
+   changeQueue = Heap_getFirst(readyToRunQueue[queueToExecute],numberOfReadyToRunProcesses[queueToExecute]);
+
+   if(OperatingSystem_CheckExecutingPriority(changeQueue)){
+    OperatingSystem_ShowTime('s');
+    ComputerSystem_DebugMessage(121,'s',executingProcessID, programList[processTable[executingProcessID].programListIndex] -> executableName,changeQueue,programList[processTable[changeQueue].programListIndex] -> executableName);
+    OperatingSystem_PreemptRunningProcess();
+    OperatingSystem_Dispatch(OperatingSystem_ShortTermScheduler());
+    OperatingSystem_PrintStatus();
+   }
+  }
+
+ }
+
+}
+
+
+int OperatingSystem_ExtractFromBlocked() {
+ int selectedProcess=-1;
+ selectedProcess=Heap_poll(sleepingProcessesQueue,0 ,&numberOfSleepingProcesses);
+ return selectedProcess;
+}
+
+int OperatingSystem_CheckQueue(){
+ if (numberOfReadyToRunProcesses[USERPROCESSQUEUE] > 0)
+  return USERPROCESSQUEUE;
+ else if (numberOfReadyToRunProcesses[DAEMONSQUEUE] > 0)
+  return DAEMONSQUEUE;
+ return -1;
+}
+
+int OperatingSystem_CheckExecutingPriority(int process){
+
+ if((processTable[executingProcessID].queueID == processTable[process].queueID &&
+  processTable[process].priority < processTable[executingProcessID].priority) ||
+    (processTable[executingProcessID].queueID != processTable[process].queueID &&
+  processTable[executingProcessID].queueID == DAEMONSQUEUE))
+  return 1;
+ else
+  return 0;
+}
+
+
+void OperatingSystem_MoveToTheBLOCKState(){
+ if(Heap_add(executingProcessID, sleepingProcessesQueue, 0, &numberOfSleepingProcesses, 4)>=0){
+  processTable[executingProcessID].state=BLOCKED;
+  processTable[executingProcessID].whenToWakeUp = abs(Processor_GetAccumulator())+numberOfClockInterrupts+1;
+  OperatingSystem_ShowTime('p');
+  ComputerSystem_DebugMessage(110, 'p', executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName);
+  OperatingSystem_SaveContext(executingProcessID);
+ }
 }
