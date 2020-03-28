@@ -43,6 +43,7 @@ typedef struct {
 	int copyOfPCRegister;
 	unsigned int copyOfPSWRegister;
 	int programListIndex;
+	int copyOfAccumulator;
 	int queueID;
 	int whenToWakeUp; // Exercise 5-a of V2
 } PCB;

@@ -178,6 +178,8 @@ int OperatingSystem_LongTermScheduler() {
 				}
 		}
 	}
+	if (numberOfSuccessfullyCreatedProcesses > 1)
+		OperatingSystem_PrintStatus();
 	// Return the number of succesfully created processes
 	return numberOfSuccessfullyCreatedProcesses;
 }
@@ -280,7 +282,7 @@ void OperatingSystem_MoveToTheREADYState(int PID, int queueID) {
 		OperatingSystem_ShowTime(SYSPROC);
 		ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName);
 	} 
-	OperatingSystem_PrintReadyToRunQueue();
+	//OperatingSystem_PrintReadyToRunQueue();
 }
 
 
@@ -332,7 +334,7 @@ void OperatingSystem_RestoreContext(int PID) {
 	// New values for the CPU registers are obtained from the PCB
 	Processor_CopyInSystemStack(MAINMEMORYSIZE-1,processTable[PID].copyOfPCRegister);
 	Processor_CopyInSystemStack(MAINMEMORYSIZE-2,processTable[PID].copyOfPSWRegister);
-	
+	Processor_SetAccumulator(processTable[PID].copyOfAccumulator);
 	// Same thing for the MMU registers
 	MMU_SetBase(processTable[PID].initialPhysicalAddress);
 	MMU_SetLimit(processTable[PID].processSize);
@@ -359,6 +361,8 @@ void OperatingSystem_SaveContext(int PID) {
 	
 	// Load PSW saved for interrupt manager
 	processTable[PID].copyOfPSWRegister=Processor_CopyFromSystemStack(MAINMEMORYSIZE-2);
+
+	processTable[PID].copyOfAccumulator=Processor_GetAccumulator();
 	
 }
 
@@ -371,6 +375,7 @@ void OperatingSystem_HandleException() {
 	ComputerSystem_DebugMessage(71,SYSPROC,executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
 	
 	OperatingSystem_TerminateProcess();
+	OperatingSystem_PrintStatus();
 }
 
 
@@ -424,6 +429,7 @@ void OperatingSystem_HandleSystemCall() {
 			OperatingSystem_ShowTime(SYSPROC);
 			ComputerSystem_DebugMessage(73,SYSPROC,executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
 			OperatingSystem_TerminateProcess();
+			OperatingSystem_PrintStatus();
 			break;
 		//ex-12
 		case SYSCALL_YIELD:
@@ -436,6 +442,7 @@ void OperatingSystem_HandleSystemCall() {
 						ComputerSystem_DebugMessage(115,SHORTTERMSCHEDULE,processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
 						OperatingSystem_PreemptRunningProcess();
 						OperatingSystem_Dispatch(process);
+						OperatingSystem_PrintStatus();
 					}
 				}
 			}
@@ -581,7 +588,7 @@ int OperatingSystem_CheckExecutingPriority(int process){
 void OperatingSystem_MoveToTheBLOCKState(){
 	if(Heap_add(executingProcessID, sleepingProcessesQueue, QUEUE_WAKEUP, &numberOfSleepingProcesses, PROCESSTABLEMAXSIZE)>=0){
 		processTable[executingProcessID].state=BLOCKED;
-		processTable[executingProcessID].whenToWakeUp = abs(Processor_GetAccumulator())+numberOfClockInterrupts+1;
+		processTable[executingProcessID].whenToWakeUp = abs(processTable[executingProcessID].copyOfAccumulator)+numberOfClockInterrupts+1;
 		OperatingSystem_ShowTime(SYSPROC);
 		ComputerSystem_DebugMessage(110, SYSPROC, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName);
 		OperatingSystem_SaveContext(executingProcessID);

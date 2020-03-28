@@ -910,6 +910,7 @@ typedef struct {
  int copyOfPCRegister;
  unsigned int copyOfPSWRegister;
  int programListIndex;
+ int copyOfAccumulator;
  int queueID;
  int whenToWakeUp;
 } PCB;
@@ -3106,7 +3107,7 @@ void OperatingSystem_RestoreContext(int PID) {
 
  Processor_CopyInSystemStack(300 -1,processTable[PID].copyOfPCRegister);
  Processor_CopyInSystemStack(300 -2,processTable[PID].copyOfPSWRegister);
-
+ Processor_SetAccumulator(processTable[PID].copyOfAccumulator);
 
  MMU_SetBase(processTable[PID].initialPhysicalAddress);
  MMU_SetLimit(processTable[PID].processSize);
@@ -3134,6 +3135,8 @@ void OperatingSystem_SaveContext(int PID) {
 
  processTable[PID].copyOfPSWRegister=Processor_CopyFromSystemStack(300 -2);
 
+ processTable[PID].copyOfAccumulator=Processor_GetAccumulator();
+
 }
 
 
@@ -3145,6 +3148,7 @@ void OperatingSystem_HandleException() {
  ComputerSystem_DebugMessage(71,'p',executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
 
  OperatingSystem_TerminateProcess();
+ OperatingSystem_PrintStatus();
 }
 
 
@@ -3198,6 +3202,7 @@ void OperatingSystem_HandleSystemCall() {
    OperatingSystem_ShowTime('p');
    ComputerSystem_DebugMessage(73,'p',executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
    OperatingSystem_TerminateProcess();
+   OperatingSystem_PrintStatus();
    break;
 
   case SYSCALL_YIELD:
@@ -3210,6 +3215,7 @@ void OperatingSystem_HandleSystemCall() {
       ComputerSystem_DebugMessage(115,'s',processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
       OperatingSystem_PreemptRunningProcess();
       OperatingSystem_Dispatch(process);
+      OperatingSystem_PrintStatus();
      }
     }
    }
@@ -3355,7 +3361,7 @@ int OperatingSystem_CheckExecutingPriority(int process){
 void OperatingSystem_MoveToTheBLOCKState(){
  if(Heap_add(executingProcessID, sleepingProcessesQueue, 0, &numberOfSleepingProcesses, 4)>=0){
   processTable[executingProcessID].state=BLOCKED;
-  processTable[executingProcessID].whenToWakeUp = abs(Processor_GetAccumulator())+numberOfClockInterrupts+1;
+  processTable[executingProcessID].whenToWakeUp = abs(processTable[executingProcessID].copyOfAccumulator)+numberOfClockInterrupts+1;
   OperatingSystem_ShowTime('p');
   ComputerSystem_DebugMessage(110, 'p', executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName);
   OperatingSystem_SaveContext(executingProcessID);

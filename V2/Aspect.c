@@ -550,18 +550,18 @@ enum ProgramTypes {USERPROGRAM,DAEMONPROGRAM};
 enum ProcessStates {NEW,READY,EXECUTING,BLOCKED,EXIT}; 
 #line 34 "OperatingSystem.h"
 enum SystemCallIdentifiers {SYSCALL_END=3,SYSCALL_YIELD=4,SYSCALL_PRINTEXECPID=5,SYSCALL_SLEEP=7}; 
-#line 48 "OperatingSystem.h"
-typedef struct {int busy; int initialPhysicalAddress; int processSize; int state; int priority; int copyOfPCRegister; unsigned int copyOfPSWRegister; int programListIndex; int queueID; int whenToWakeUp; 
+#line 49 "OperatingSystem.h"
+typedef struct {int busy; int initialPhysicalAddress; int processSize; int state; int priority; int copyOfPCRegister; unsigned int copyOfPSWRegister; int programListIndex; int copyOfAccumulator; int queueID; int whenToWakeUp; 
 }PCB; 
-#line 52 "OperatingSystem.h"
-extern  PCB processTable[]; 
 #line 53 "OperatingSystem.h"
-extern int OS_address_base; 
+extern  PCB processTable[]; 
 #line 54 "OperatingSystem.h"
+extern int OS_address_base; 
+#line 55 "OperatingSystem.h"
 extern int sipID; 
-#line 57 "OperatingSystem.h"
-void OperatingSystem_Initialize(); 
 #line 58 "OperatingSystem.h"
+void OperatingSystem_Initialize(); 
+#line 59 "OperatingSystem.h"
 void OperatingSystem_InterruptLogic(int ); 
 # 6 "OperatingSystemBase.h" 2
 # 11 "Heap.h" 1
