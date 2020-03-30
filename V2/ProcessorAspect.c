@@ -623,18 +623,18 @@ enum ProgramTypes {USERPROGRAM,DAEMONPROGRAM};
 enum ProcessStates {NEW,READY,EXECUTING,BLOCKED,EXIT}; 
 #line 34 "OperatingSystem.h"
 enum SystemCallIdentifiers {SYSCALL_END=3,SYSCALL_YIELD=4,SYSCALL_PRINTEXECPID=5,SYSCALL_SLEEP=7}; 
-#line 48 "OperatingSystem.h"
-typedef struct {int busy; int initialPhysicalAddress; int processSize; int state; int priority; int copyOfPCRegister; unsigned int copyOfPSWRegister; int programListIndex; int queueID; int whenToWakeUp; 
+#line 49 "OperatingSystem.h"
+typedef struct {int busy; int initialPhysicalAddress; int processSize; int state; int priority; int copyOfPCRegister; unsigned int copyOfPSWRegister; int programListIndex; int copyOfAccumulator; int queueID; int whenToWakeUp; 
 }PCB; 
-#line 52 "OperatingSystem.h"
-extern  PCB processTable[]; 
 #line 53 "OperatingSystem.h"
-extern int OS_address_base; 
+extern  PCB processTable[]; 
 #line 54 "OperatingSystem.h"
+extern int OS_address_base; 
+#line 55 "OperatingSystem.h"
 extern int sipID; 
-#line 57 "OperatingSystem.h"
-void OperatingSystem_Initialize(); 
 #line 58 "OperatingSystem.h"
+void OperatingSystem_Initialize(); 
+#line 59 "OperatingSystem.h"
 void OperatingSystem_InterruptLogic(int ); 
 # 4 "Processor.c" 2
 # 1 "/usr/include/string.h" 1 3 4
@@ -1230,7 +1230,7 @@ return (char* )retValue_acc;
 
 }
  
-#line 309 "Processor.c"
+#line 310 "Processor.c"
 void Processor_ShowTime(char section)  
 # 1236 "ProcessorAspect.c"
 {
@@ -1240,7 +1240,7 @@ void Processor_ShowTime(char section)
 # 1241 "ProcessorAspect.c"
 {
 
-#line 310 "Processor.c"
+#line 311 "Processor.c"
 ComputerSystem_DebugMessage((Processor_PSW_BitState(EXECUTION_MODE_BIT)?95:94), section, Clock_GetTime()); 
 # 1246 "ProcessorAspect.c"
 

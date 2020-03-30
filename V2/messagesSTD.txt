@@ -12,7 +12,7 @@
 106,Ready-to-run processes queue:\n
 107, [@G%d@@,%d]%s
 108,\n
-110,Process [@G%d - %s@@] moving from the [@GREADY@@] state to the [@GEXECUTING@@] state\n
+110,Process [@G%d - %s@@] moving from the [@G%s@@] state to the [@G%s@@] state\n
 111,New process [@G%d - %s@@] moving to the [@GNEW@@] state\n
 112,\t\tUSER:
 113,\t\tDAEMONS:

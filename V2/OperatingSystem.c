@@ -276,13 +276,13 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
 // Move a process to the READY state: it will be inserted, depending on its priority, in
 // a queue of identifiers of READY processes
 void OperatingSystem_MoveToTheREADYState(int PID, int queueID) {
-	
+	int anterior = processTable[PID].state;
 	if (Heap_add(PID, readyToRunQueue[queueID],QUEUE_PRIORITY ,&numberOfReadyToRunProcesses[queueID] ,PROCESSTABLEMAXSIZE)>=0) {
 		processTable[PID].state=READY;
 		OperatingSystem_ShowTime(SYSPROC);
-		ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName);
+		ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, statesNames[anterior], statesNames[1]);
 	} 
-	//OperatingSystem_PrintReadyToRunQueue();
+	//OperatingSystem_PrintReadyToRunQueue(); //Ex-8 V2
 }
 
 
@@ -322,7 +322,10 @@ void OperatingSystem_Dispatch(int PID) {
 	// The process identified by PID becomes the current executing process
 	executingProcessID=PID;
 	// Change the process' state
+	
 	processTable[PID].state=EXECUTING;
+	OperatingSystem_ShowTime(SYSPROC);
+	ComputerSystem_DebugMessage(110, SYSPROC, PID, programList[processTable[PID].programListIndex]->executableName, statesNames[1], statesNames[processTable[PID].state]);
 	// Modify hardware registers with appropriate values for the process identified by PID
 	OperatingSystem_RestoreContext(PID);
 }
@@ -385,6 +388,8 @@ void OperatingSystem_TerminateProcess() {
 	int selectedProcess;
   	
 	processTable[executingProcessID].state=EXIT;
+	OperatingSystem_ShowTime(SYSPROC);
+	ComputerSystem_DebugMessage(110, SYSPROC, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, statesNames[2], statesNames[processTable[executingProcessID].state]);
 	
 	if (programList[processTable[executingProcessID].programListIndex]->type==USERPROGRAM) 
 		// One more user process that has terminated
@@ -435,8 +440,8 @@ void OperatingSystem_HandleSystemCall() {
 		case SYSCALL_YIELD:
 			queueID = processTable[executingProcessID].queueID;
 			if(numberOfReadyToRunProcesses[queueID]>0){
-				process = OperatingSystem_ExtractFromReadyToRun(queueID);
-				if(executingProcessID!=process){
+				process = OperatingSystem_ExtractFromReadyToRun(queueID); //coger el primero con get
+				if(executingProcessID!=process){ //sobra
 					if(processTable[executingProcessID].priority == processTable[process].priority){
 						OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
 						ComputerSystem_DebugMessage(115,SHORTTERMSCHEDULE,processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
@@ -469,7 +474,7 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 		case EXCEPTION_BIT: // EXCEPTION_BIT=6
 			OperatingSystem_HandleException();
 			break;
-		case CLOCKINT_BIT: //EXCEPTION_BIT=9 
+		case CLOCKINT_BIT: //EXCEPTION_BIT=9 //ex-2 V2
 			OperatingSystem_HandleClockInterrupt();
 			break;
 	}
@@ -534,7 +539,7 @@ void OperatingSystem_HandleClockInterrupt(){
 	OperatingSystem_ShowTime(INTERRUPT);
 	numberOfClockInterrupts++;
 	ComputerSystem_DebugMessage(120, INTERRUPT, numberOfClockInterrupts);
-
+	//ex-6 V2
 	process = Heap_getFirst(sleepingProcessesQueue, numberOfSleepingProcesses);
 	while(processTable[process].whenToWakeUp==numberOfClockInterrupts){
 		OperatingSystem_ExtractFromBlocked();
@@ -546,6 +551,7 @@ void OperatingSystem_HandleClockInterrupt(){
 			changeQueue = Heap_getFirst(readyToRunQueue[queueToExecute],numberOfReadyToRunProcesses[queueToExecute]);
 		
 			if(OperatingSystem_CheckExecutingPriority(changeQueue)){
+				//ex-6 c V2
 				OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
 				ComputerSystem_DebugMessage(121,SHORTTERMSCHEDULE,executingProcessID, programList[processTable[executingProcessID].programListIndex] -> executableName,changeQueue,programList[processTable[changeQueue].programListIndex] -> executableName);
 				OperatingSystem_PreemptRunningProcess();
@@ -590,7 +596,7 @@ void OperatingSystem_MoveToTheBLOCKState(){
 		processTable[executingProcessID].state=BLOCKED;
 		processTable[executingProcessID].whenToWakeUp = abs(processTable[executingProcessID].copyOfAccumulator)+numberOfClockInterrupts+1;
 		OperatingSystem_ShowTime(SYSPROC);
-		ComputerSystem_DebugMessage(110, SYSPROC, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName);
+		ComputerSystem_DebugMessage(110, SYSPROC, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, statesNames[2], statesNames[3]);
 		OperatingSystem_SaveContext(executingProcessID);
 	}
 }

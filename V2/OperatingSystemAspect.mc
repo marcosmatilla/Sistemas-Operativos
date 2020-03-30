@@ -2953,6 +2953,8 @@ int OperatingSystem_LongTermScheduler() {
     }
   }
  }
+ if (numberOfSuccessfullyCreatedProcesses >= 1)
+  OperatingSystem_PrintStatus();
 
  return numberOfSuccessfullyCreatedProcesses;
 }
@@ -3049,13 +3051,13 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
 
 
 void OperatingSystem_MoveToTheREADYState(int PID, int queueID) {
-
+ int anterior = processTable[PID].state;
  if (Heap_add(PID, readyToRunQueue[queueID],1 ,&numberOfReadyToRunProcesses[queueID] ,4)>=0) {
   processTable[PID].state=READY;
   OperatingSystem_ShowTime('p');
-  ComputerSystem_DebugMessage(110, 'p', PID, programList[processTable[PID].programListIndex]->executableName);
+  ComputerSystem_DebugMessage(110, 'p', PID, programList[processTable[PID].programListIndex]->executableName, statesNames[anterior], statesNames[1]);
  }
- OperatingSystem_PrintReadyToRunQueue();
+
 }
 
 
@@ -3095,7 +3097,10 @@ void OperatingSystem_Dispatch(int PID) {
 
  executingProcessID=PID;
 
+
  processTable[PID].state=EXECUTING;
+ OperatingSystem_ShowTime('p');
+ ComputerSystem_DebugMessage(110, 'p', PID, programList[processTable[PID].programListIndex]->executableName, statesNames[1], statesNames[processTable[PID].state]);
 
  OperatingSystem_RestoreContext(PID);
 }
@@ -3158,6 +3163,8 @@ void OperatingSystem_TerminateProcess() {
  int selectedProcess;
 
  processTable[executingProcessID].state=EXIT;
+ OperatingSystem_ShowTime('p');
+ ComputerSystem_DebugMessage(110, 'p', executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, statesNames[2], statesNames[processTable[executingProcessID].state]);
 
  if (programList[processTable[executingProcessID].programListIndex]->type==USERPROGRAM)
 
@@ -3319,6 +3326,7 @@ void OperatingSystem_HandleClockInterrupt(){
    changeQueue = Heap_getFirst(readyToRunQueue[queueToExecute],numberOfReadyToRunProcesses[queueToExecute]);
 
    if(OperatingSystem_CheckExecutingPriority(changeQueue)){
+
     OperatingSystem_ShowTime('s');
     ComputerSystem_DebugMessage(121,'s',executingProcessID, programList[processTable[executingProcessID].programListIndex] -> executableName,changeQueue,programList[processTable[changeQueue].programListIndex] -> executableName);
     OperatingSystem_PreemptRunningProcess();
@@ -3363,7 +3371,7 @@ void OperatingSystem_MoveToTheBLOCKState(){
   processTable[executingProcessID].state=BLOCKED;
   processTable[executingProcessID].whenToWakeUp = abs(processTable[executingProcessID].copyOfAccumulator)+numberOfClockInterrupts+1;
   OperatingSystem_ShowTime('p');
-  ComputerSystem_DebugMessage(110, 'p', executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName);
+  ComputerSystem_DebugMessage(110, 'p', executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, statesNames[2], statesNames[3]);
   OperatingSystem_SaveContext(executingProcessID);
  }
 }

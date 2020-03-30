@@ -1048,6 +1048,7 @@ typedef struct {
  int copyOfPCRegister;
  unsigned int copyOfPSWRegister;
  int programListIndex;
+ int copyOfAccumulator;
  int queueID;
  int whenToWakeUp;
 } PCB;
@@ -1623,6 +1624,7 @@ char * Processor_ShowPSW(){
   pswmask[tam-INTERRUPT_MASKED_BIT]='M';
  return pswmask;
 }
+
 
 
 

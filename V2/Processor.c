@@ -278,7 +278,7 @@ void Processor_ManageInterrupts() {
 				Processor_CopyInSystemStack(MAINMEMORYSIZE-2, registerPSW_CPU);	
 				// Activate protected excution mode
 				Processor_ActivatePSW_Bit(EXECUTION_MODE_BIT);
-				Processor_ActivatePSW_Bit(INTERRUPT_MASKED_BIT);
+				Processor_ActivatePSW_Bit(INTERRUPT_MASKED_BIT); //ex-3 d V2
 				// Call the appropriate OS interrupt-handling routine setting PC register
 				registerPC_CPU=interruptVectorTable[i];
 				break; // Don't process another interrupt
@@ -298,7 +298,7 @@ char * Processor_ShowPSW(){
 		pswmask[tam-ZERO_BIT]='Z';
 	if (Processor_PSW_BitState(POWEROFF_BIT))
 		pswmask[tam-POWEROFF_BIT]='S';
-	if (Processor_PSW_BitState(INTERRUPT_MASKED_BIT))
+	if (Processor_PSW_BitState(INTERRUPT_MASKED_BIT)) //ex-3 b V2
 		pswmask[tam-INTERRUPT_MASKED_BIT]='M';
 	return pswmask;
 }
@@ -306,6 +306,7 @@ char * Processor_ShowPSW(){
 
 /////////////////////////////////////////////////////////
 //  New functions below this line  //////////////////////
+//ex-1 V2
 void Processor_ShowTime(char section) {
 	ComputerSystem_DebugMessage(Processor_PSW_BitState(EXECUTION_MODE_BIT)?95:94,section,Clock_GetTime());
 }
