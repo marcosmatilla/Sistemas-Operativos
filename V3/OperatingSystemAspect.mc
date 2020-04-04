@@ -2927,11 +2927,8 @@ int OperatingSystem_LongTermScheduler() {
  int PID, i,
   numberOfSuccessfullyCreatedProcesses=0;
 
- for (i=0; programList[i]!=
-# 156 "OperatingSystem.c" 3 4
-                          ((void *)0) 
-# 156 "OperatingSystem.c"
-                               && i<20 ; i++) {
+ while(OperatingSystem_IsThereANewProgram()==1) {
+  i = Heap_poll(arrivalTimeQueue, 2, &numberOfProgramsInArrivalTimeQueue);
   PID=OperatingSystem_CreateProcess(i);
   switch(PID){
    case(-3):
@@ -2950,7 +2947,8 @@ int OperatingSystem_LongTermScheduler() {
     OperatingSystem_ShowTime('e');
     ComputerSystem_DebugMessage(105, 'e', programList[i] -> executableName, "is too big");
     break;
-   default: numberOfSuccessfullyCreatedProcesses++;
+   default:
+    numberOfSuccessfullyCreatedProcesses++;
     if (programList[i]->type==USERPROGRAM) {
      numberOfNotTerminatedUserProcesses++;
 

@@ -153,7 +153,8 @@ int OperatingSystem_LongTermScheduler() {
 	int PID, i,
 		numberOfSuccessfullyCreatedProcesses=0;
 	
-	for (i=0; programList[i]!=NULL && i<PROGRAMSMAXNUMBER ; i++) {
+	while(OperatingSystem_IsThereANewProgram()==1) {
+		i = Heap_poll(arrivalTimeQueue, QUEUE_ARRIVAL, &numberOfProgramsInArrivalTimeQueue);
 		PID=OperatingSystem_CreateProcess(i);
 		switch(PID){
 			case(NOFREEENTRY):
@@ -172,7 +173,8 @@ int OperatingSystem_LongTermScheduler() {
 				OperatingSystem_ShowTime(ERROR);
 				ComputerSystem_DebugMessage(105, ERROR, programList[i] -> executableName, "is too big");
 				break;
-			default: numberOfSuccessfullyCreatedProcesses++;
+			default: 
+				numberOfSuccessfullyCreatedProcesses++;
 				if (programList[i]->type==USERPROGRAM) {
 					numberOfNotTerminatedUserProcesses++;
 					// Move process to the ready state
@@ -180,7 +182,7 @@ int OperatingSystem_LongTermScheduler() {
 				}
 				else{
 					OperatingSystem_MoveToTheREADYState(PID,DAEMONSQUEUE);
-				}
+				}		
 		}
 	}
 	if (numberOfSuccessfullyCreatedProcesses >= 1)
