@@ -94,10 +94,7 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 	// Include in program list  all system daemon processes
 	OperatingSystem_PrepareDaemons(daemonsIndex);
 
-	//ComputerSystem_FillInArrivalTimeQueue(); //ex-0 c V3
-	//OperatingSystem_PrintStatus(); //ex-0 d V3
-
-	//ex-15 V1
+	//ex-15
 	// Create all user processes from the information given in the command line
 	OperatingSystem_LongTermScheduler(); 
 	if( numberOfNotTerminatedUserProcesses == 0){
@@ -272,6 +269,7 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
 		processTable[PID].copyOfPSWRegister=0;
 		processTable[PID].queueID = USERPROCESSQUEUE;
 	}
+
 }
 
 
@@ -443,12 +441,14 @@ void OperatingSystem_HandleSystemCall() {
 			queueID = processTable[executingProcessID].queueID;
 			if(numberOfReadyToRunProcesses[queueID]>0){
 				process = OperatingSystem_ExtractFromReadyToRun(queueID); //coger el primero con get
-				if(processTable[executingProcessID].priority == processTable[process].priority){
-					OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
-					ComputerSystem_DebugMessage(115,SHORTTERMSCHEDULE,processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
-					OperatingSystem_PreemptRunningProcess();
-					OperatingSystem_Dispatch(process);
-					OperatingSystem_PrintStatus();
+				if(executingProcessID!=process){ //sobra
+					if(processTable[executingProcessID].priority == processTable[process].priority){
+						OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
+						ComputerSystem_DebugMessage(115,SHORTTERMSCHEDULE,processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
+						OperatingSystem_PreemptRunningProcess();
+						OperatingSystem_Dispatch(process);
+						OperatingSystem_PrintStatus();
+					}
 				}
 			}
 			break;
@@ -480,7 +480,6 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 	}
 
 }
-
 
 //ex-11
 //muestra en pantalla el contenido de la cola de procesos LISTOS

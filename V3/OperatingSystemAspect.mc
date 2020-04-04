@@ -59,12 +59,10 @@ extern int endSimulationTime;
 # 6 "ComputerSystem.h" 2
 
 
-
-
 void ComputerSystem_PowerOn(int argc, char *argv[], int);
 void ComputerSystem_PowerOff();
 void OperatingSystem_ShowTime(char);
-# 36 "ComputerSystem.h"
+# 34 "ComputerSystem.h"
 typedef struct ProgramData {
     char *executableName;
     unsigned int arrivalTime;
@@ -2863,10 +2861,6 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 
 
 
-
-
-
-
  OperatingSystem_LongTermScheduler();
  if( numberOfNotTerminatedUserProcesses == 0){
   OperatingSystem_ReadyToShutdown();
@@ -2920,9 +2914,9 @@ int OperatingSystem_LongTermScheduler() {
   numberOfSuccessfullyCreatedProcesses=0;
 
  for (i=0; programList[i]!=
-# 155 "OperatingSystem.c" 3 4
+# 151 "OperatingSystem.c" 3 4
                           ((void *)0) 
-# 155 "OperatingSystem.c"
+# 151 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
   switch(PID){
@@ -3044,6 +3038,7 @@ void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int 
   processTable[PID].copyOfPSWRegister=0;
   processTable[PID].queueID = USERPROCESSQUEUE;
  }
+
 }
 
 
@@ -3215,12 +3210,14 @@ void OperatingSystem_HandleSystemCall() {
    queueID = processTable[executingProcessID].queueID;
    if(numberOfReadyToRunProcesses[queueID]>0){
     process = OperatingSystem_ExtractFromReadyToRun(queueID);
-    if(processTable[executingProcessID].priority == processTable[process].priority){
-     OperatingSystem_ShowTime('s');
-     ComputerSystem_DebugMessage(115,'s',processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
-     OperatingSystem_PreemptRunningProcess();
-     OperatingSystem_Dispatch(process);
-     OperatingSystem_PrintStatus();
+    if(executingProcessID!=process){
+     if(processTable[executingProcessID].priority == processTable[process].priority){
+      OperatingSystem_ShowTime('s');
+      ComputerSystem_DebugMessage(115,'s',processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
+      OperatingSystem_PreemptRunningProcess();
+      OperatingSystem_Dispatch(process);
+      OperatingSystem_PrintStatus();
+     }
     }
    }
    break;
@@ -3252,7 +3249,11 @@ void OperatingSystem_InterruptLogic(int entryPoint){
  }
 
 }
-# 536 "OperatingSystem.c"
+
+
+
+
+
 void OperatingSystem_PrintReadyToRunQueue(){
  int i;
  OperatingSystem_ShowTime('s');
@@ -3268,6 +3269,7 @@ void OperatingSystem_PrintReadyToRunQueue(){
  }
  ComputerSystem_DebugMessage(108,'s');
 }
+
 
 
 

@@ -68,47 +68,26 @@ extern int GEN_ASSERTS;
 # 5 "ComputerSystem.h" 2
 # 1 "ComputerSystemBase.h" 1
 # 1 "ComputerSystem.h" 1
-# 5 "ComputerSystemBase.h" 2
-# 1 "Heap.h" 1
-# 12 "Heap.h" 
-typedef struct {int info; unsigned int insertionOrder; 
-}heapItem; 
-#line 21 "Heap.h"
-int Heap_poll( heapItem ([]), int , int *); 
-# 21 "Heap.h" 
-# 31 "Heap.h" 
-int Heap_add(int ,  heapItem ([]), int , int *, int ); 
-#line 38 "Heap.h"
-int Heap_compare( heapItem ,  heapItem , int ); 
-#line 44 "Heap.h"
-int Heap_getFirst( heapItem ([]), int ); 
-#line 8 "ComputerSystemBase.h"
+# 7 "ComputerSystemBase.h" 2
 int ComputerSystem_ObtainProgramList(int , char *([]), int ); 
-#line 9 "ComputerSystemBase.h"
+#line 8 "ComputerSystemBase.h"
 void ComputerSystem_DebugMessage(int , char , ...); 
-#line 10 "ComputerSystemBase.h"
-void ComputerSystem_FillInArrivalTimeQueue(); 
 #line 11 "ComputerSystemBase.h"
-void ComputerSystem_PrintArrivalTimeQueue(); 
-#line 14 "ComputerSystemBase.h"
 extern char defaultDebugLevel[]; 
-#line 15 "ComputerSystemBase.h"
+#line 12 "ComputerSystemBase.h"
 extern int intervalBetweenInterrupts; 
-#line 17 "ComputerSystemBase.h"
-extern int endSimulationTime; 
-# 6 "ComputerSystemBase.h" 2
-# 10 "ComputerSystem.h" 2
+#line 8 "ComputerSystem.h"
 void ComputerSystem_PowerOn(int argc, char *argv[], int ); 
-#line 11 "ComputerSystem.h"
+#line 9 "ComputerSystem.h"
 void ComputerSystem_PowerOff(); 
-#line 12 "ComputerSystem.h"
+#line 10 "ComputerSystem.h"
 void OperatingSystem_ShowTime(char ); 
-#line 40 "ComputerSystem.h"
+# 6 "ComputerSystem.h" 2
+# 38 "ComputerSystem.h" 
 typedef struct ProgramData {char *executableName; unsigned int arrivalTime; unsigned int type; 
 }PROGRAMS_DATA; 
-#line 44 "ComputerSystem.h"
+#line 42 "ComputerSystem.h"
 extern  PROGRAMS_DATA *programList[20]; 
-# 36 "ComputerSystem.h" 
 # 5 "OperatingSystemBase.h" 2
 # 1 "OperatingSystem.h" 1
 # 1 "/usr/include/stdio.h" 1 3 4
@@ -584,6 +563,19 @@ extern int sipID;
 void OperatingSystem_Initialize(); 
 #line 59 "OperatingSystem.h"
 void OperatingSystem_InterruptLogic(int ); 
+# 6 "OperatingSystemBase.h" 2
+# 11 "Heap.h" 1
+typedef struct {int info; unsigned int insertionOrder; 
+}heapItem; 
+#line 20 "Heap.h"
+int Heap_poll( heapItem ([]), int , int *); 
+# 20 "Heap.h" 
+# 30 "Heap.h" 
+int Heap_add(int ,  heapItem ([]), int , int *, int ); 
+#line 37 "Heap.h"
+int Heap_compare( heapItem ,  heapItem , int ); 
+#line 43 "Heap.h"
+int Heap_getFirst( heapItem ([]), int ); 
 #line 10 "OperatingSystemBase.h"
 int OperatingSystem_ObtainAnEntryInTheProcessTable(); 
 #line 11 "OperatingSystemBase.h"
@@ -604,16 +596,14 @@ void OperatingSystem_PrintStatus();
 void OperatingSystem_PrintReadyToRunQueue(); 
 #line 19 "OperatingSystemBase.h"
 void OperatingSystem_PrepareTeachersDaemons(); 
-#line 20 "OperatingSystemBase.h"
-int OperatingSystem_IsThereANewProgram(); 
-#line 27 "OperatingSystemBase.h"
+#line 22 "OperatingSystemBase.h"
 extern  heapItem sleepingProcessesQueue[]; 
-#line 28 "OperatingSystemBase.h"
+#line 23 "OperatingSystemBase.h"
 extern int numberOfSleepingProcesses; 
-# 6 "OperatingSystemBase.h" 2
-# 37 "OperatingSystemBase.h" 
+#line 27 "OperatingSystemBase.h"
 extern int baseDaemonsInProgramList; 
-#line 6 "MyAspect.c"
+# 7 "OperatingSystemBase.h" 2
+# 6 "MyAspect.c" 2
  inline void __utac_acc__Aspect__1(void) { 
 
 

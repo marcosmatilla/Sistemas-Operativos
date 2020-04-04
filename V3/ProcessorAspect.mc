@@ -158,51 +158,21 @@ void Processor_SetCTRL(int);
 
 # 1 "ComputerSystem.h" 1
 # 5 "ComputerSystemBase.h" 2
-# 1 "Heap.h" 1
-# 9 "Heap.h"
-typedef struct {
- int info;
- unsigned int insertionOrder;
-} heapItem;
-# 21 "Heap.h"
-int Heap_poll(heapItem[], int, int*);
-# 31 "Heap.h"
-int Heap_add(int, heapItem[], int , int*, int);
-
-
-
-
-
-
-int Heap_compare(heapItem, heapItem, int);
-
-
-
-
-
-int Heap_getFirst(heapItem[], int);
-# 6 "ComputerSystemBase.h" 2
 
 
 int ComputerSystem_ObtainProgramList(int , char *[], int);
 void ComputerSystem_DebugMessage(int, char , ...);
-void ComputerSystem_FillInArrivalTimeQueue();
-void ComputerSystem_PrintArrivalTimeQueue();
 
 
 extern char defaultDebugLevel[];
 extern int intervalBetweenInterrupts;
-
-extern int endSimulationTime;
 # 6 "ComputerSystem.h" 2
-
-
 
 
 void ComputerSystem_PowerOn(int argc, char *argv[], int);
 void ComputerSystem_PowerOff();
 void OperatingSystem_ShowTime(char);
-# 36 "ComputerSystem.h"
+# 34 "ComputerSystem.h"
 typedef struct ProgramData {
     char *executableName;
     unsigned int arrivalTime;
