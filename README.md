@@ -1,10 +1,12 @@
 # SO1920
-##Sistemas Operativos 2019-2020.
+Sistemas Operativos 2019-2020.
+----
 En este repositorio iré incluyendo todo lo que tenga que ver acerca de la asignatura, así como las tareas y los ejercicios que iremos desarrollando.
 
-Se encuentra por el momento:
+* **V0** - SIMULADOR DE UN SISTEMA INFORMÁTICO PRIMITIVO
 
-i. V0
-ii. V1
-iii. V2
-iv. V3
+* **V1** - SIMULADOR DE UN SISTEMA INFORMÁTICO MULTIPROGRAMADO
+
+* **V2** - SIMULADOR DE UN SISTEMA INFORMÁTICO MULTIPROGRAMADO CON INTERRUPCIONES DE RELOJ
+
+* **V3** - SIMULADOR DE UN SISTEMA INFORMÁTICO MULTIPROGRAMADO CON INTERRUPCIONES DE RELOJ Y UN NUEVO PLANIFICADOR A LARGO PLAZO
