@@ -10,8 +10,9 @@
 int Processor_FetchInstruction();
 void Processor_DecodeAndExecuteInstruction();
 void Processor_ManageInterrupts();
-void Processor_ShowTime(char); //ex-1
+void Processor_ShowTime(char); //ex-1 V2
 int Clock_GetTime();
+int OperatingSystem_GetExecutingProcessID();
 
 // External data
 extern char *InstructionNames[];
@@ -100,6 +101,7 @@ void Processor_DecodeAndExecuteInstruction() {
 	int operationCode=Processor_DecodeOperationCode(registerIR_CPU);
 	int operand1=Processor_DecodeOperand1(registerIR_CPU);
 	int operand2=Processor_DecodeOperand2(registerIR_CPU);
+	int PID = OperatingSystem_GetExecutingProcessID();
 
 	Processor_DeactivatePSW_Bit(OVERFLOW_BIT);
 
@@ -220,10 +222,12 @@ void Processor_DecodeAndExecuteInstruction() {
   
 		// Instruction OS
 		case OS_INST: // Make a operating system routine in entry point indicated by operand1
+		
 			if(Processor_PSW_BitState(EXECUTION_MODE_BIT)){
 				// Show final part of HARDWARE message with CPU registers
 				// Show message: " (PC: registerPC_CPU, Accumulator: registerAccumulator_CPU, PSW: registerPSW_CPU [Processor_ShowPSW()]\n
-				ComputerSystem_DebugMessage(69, HARDWARE,InstructionNames[operationCode],operand1,operand2,registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
+				//ComputerSystem_DebugMessage(69, HARDWARE,InstructionNames[operationCode],operand1,operand2,registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
+				ComputerSystem_DebugMessage(130, HARDWARE,InstructionNames[operationCode],operand1,operand2,PID,registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
 				// Not all operating system code is executed in simulated processor, but really must do it... 
 				OperatingSystem_InterruptLogic(operand1);
 				registerPC_CPU++;
@@ -259,7 +263,8 @@ void Processor_DecodeAndExecuteInstruction() {
 	
 	// Show final part of HARDWARE message with	CPU registers
 	// Show message: " (PC: registerPC_CPU, Accumulator: registerAccumulator_CPU, PSW: registerPSW_CPU [Processor_ShowPSW()]\n
-	ComputerSystem_DebugMessage(69, HARDWARE, InstructionNames[operationCode],operand1,operand2,registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
+	ComputerSystem_DebugMessage(130, HARDWARE, InstructionNames[operationCode],operand1,operand2,PID,registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
+	//ComputerSystem_DebugMessage(69, HARDWARE,InstructionNames[operationCode],operand1,operand2,registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
 }
 	
 	

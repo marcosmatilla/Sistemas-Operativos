@@ -32,6 +32,8 @@ int OperatingSystem_ExtractFromBlocked();
 int OperatingSystem_CheckQueue();
 int OperatingSystem_ExtractFromBlocked();
 int OperatingSystem_CheckExecutingPriority(int);
+int OperatingSystem_GetExecutingProcessID(); //ex-1 V3
+
 //ex-4
 //Number of clock interruptions
 int numberOfClockInterrupts = 0;
@@ -575,3 +577,9 @@ void OperatingSystem_MoveToTheBLOCKState(){
 	}
 }
 //end ex-5 V2
+
+//ex-1 V3
+int OperatingSystem_GetExecutingProcessID() {
+	return executingProcessID;
+}
+//end ex-1 V3

@@ -158,21 +158,51 @@ void Processor_SetCTRL(int);
 
 # 1 "ComputerSystem.h" 1
 # 5 "ComputerSystemBase.h" 2
+# 1 "Heap.h" 1
+# 9 "Heap.h"
+typedef struct {
+ int info;
+ unsigned int insertionOrder;
+} heapItem;
+# 21 "Heap.h"
+int Heap_poll(heapItem[], int, int*);
+# 31 "Heap.h"
+int Heap_add(int, heapItem[], int , int*, int);
+
+
+
+
+
+
+int Heap_compare(heapItem, heapItem, int);
+
+
+
+
+
+int Heap_getFirst(heapItem[], int);
+# 6 "ComputerSystemBase.h" 2
 
 
 int ComputerSystem_ObtainProgramList(int , char *[], int);
 void ComputerSystem_DebugMessage(int, char , ...);
+void ComputerSystem_FillInArrivalTimeQueue();
+void ComputerSystem_PrintArrivalTimeQueue();
 
 
 extern char defaultDebugLevel[];
 extern int intervalBetweenInterrupts;
+
+extern int endSimulationTime;
 # 6 "ComputerSystem.h" 2
+
+
 
 
 void ComputerSystem_PowerOn(int argc, char *argv[], int);
 void ComputerSystem_PowerOff();
 void OperatingSystem_ShowTime(char);
-# 34 "ComputerSystem.h"
+# 36 "ComputerSystem.h"
 typedef struct ProgramData {
     char *executableName;
     unsigned int arrivalTime;
@@ -1334,6 +1364,7 @@ void Processor_DecodeAndExecuteInstruction();
 void Processor_ManageInterrupts();
 void Processor_ShowTime(char);
 int Clock_GetTime();
+int OperatingSystem_GetExecutingProcessID();
 
 
 extern char *InstructionNames[];
@@ -1422,6 +1453,7 @@ void Processor_DecodeAndExecuteInstruction() {
  int operationCode=Processor_DecodeOperationCode(registerIR_CPU);
  int operand1=Processor_DecodeOperand1(registerIR_CPU);
  int operand2=Processor_DecodeOperand2(registerIR_CPU);
+ int PID = OperatingSystem_GetExecutingProcessID();
 
  Processor_DeactivatePSW_Bit(OVERFLOW_BIT);
 
@@ -1542,10 +1574,12 @@ void Processor_DecodeAndExecuteInstruction() {
 
 
   case OS_INST:
+
    if(Processor_PSW_BitState(EXECUTION_MODE_BIT)){
 
 
-    ComputerSystem_DebugMessage(69, 'h',InstructionNames[operationCode],operand1,operand2,registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
+
+    ComputerSystem_DebugMessage(130, 'h',InstructionNames[operationCode],operand1,operand2,PID,registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
 
     OperatingSystem_InterruptLogic(operand1);
     registerPC_CPU++;
@@ -1581,7 +1615,8 @@ void Processor_DecodeAndExecuteInstruction() {
 
 
 
- ComputerSystem_DebugMessage(69, 'h', InstructionNames[operationCode],operand1,operand2,registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
+ ComputerSystem_DebugMessage(130, 'h', InstructionNames[operationCode],operand1,operand2,PID,registerPC_CPU,registerAccumulator_CPU,registerPSW_CPU,Processor_ShowPSW());
+
 }
 
 

@@ -2806,6 +2806,8 @@ int OperatingSystem_ExtractFromBlocked();
 int OperatingSystem_CheckQueue();
 int OperatingSystem_ExtractFromBlocked();
 int OperatingSystem_CheckExecutingPriority(int);
+int OperatingSystem_GetExecutingProcessID();
+
 
 
 int numberOfClockInterrupts = 0;
@@ -2926,9 +2928,9 @@ int OperatingSystem_LongTermScheduler() {
   numberOfSuccessfullyCreatedProcesses=0;
 
  for (i=0; programList[i]!=
-# 154 "OperatingSystem.c" 3 4
+# 156 "OperatingSystem.c" 3 4
                           ((void *)0) 
-# 154 "OperatingSystem.c"
+# 156 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
   switch(PID){
@@ -3351,4 +3353,10 @@ void OperatingSystem_MoveToTheBLOCKState(){
   ComputerSystem_DebugMessage(110, 'p', executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, statesNames[2], statesNames[3]);
   OperatingSystem_SaveContext(executingProcessID);
  }
+}
+
+
+
+int OperatingSystem_GetExecutingProcessID() {
+ return executingProcessID;
 }
