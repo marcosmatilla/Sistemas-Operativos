@@ -51,7 +51,8 @@ void ComputerSystem_PowerOn(int argc, char *argv[], int paramIndex) {
 void ComputerSystem_PowerOff() {
 	// Show message in red colour: "END of the simulation\n" 
 	ComputerSystem_ShowTime(SHUTDOWN);
-	ComputerSystem_DebugMessage(99,SHUTDOWN,"END of the simulation\n"); 
+	ComputerSystem_DebugMessage(99,SHUTDOWN,"END of the simulation\n"); .
+	
 	exit(0);
 }
 
