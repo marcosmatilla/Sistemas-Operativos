@@ -11,6 +11,7 @@
 
 // Array that contains basic data about all daemons
 // and all user programs specified in the command line
+
 PROGRAMS_DATA *programList[PROGRAMSMAXNUMBER];
 void ComputerSystem_PrintProgramList();
 void ComputerSystem_ShowTime(char); //ex-1
