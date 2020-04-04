@@ -59,10 +59,12 @@ extern int endSimulationTime;
 # 6 "ComputerSystem.h" 2
 
 
+
+
 void ComputerSystem_PowerOn(int argc, char *argv[], int);
 void ComputerSystem_PowerOff();
 void OperatingSystem_ShowTime(char);
-# 34 "ComputerSystem.h"
+# 36 "ComputerSystem.h"
 typedef struct ProgramData {
     char *executableName;
     unsigned int arrivalTime;
@@ -974,7 +976,14 @@ int OperatingSystem_IsThereANewProgram();
 
 extern heapItem sleepingProcessesQueue[];
 extern int numberOfSleepingProcesses;
-# 37 "OperatingSystemBase.h"
+
+
+
+extern int numberOfProgramsInArrivalTimeQueue;
+extern heapItem arrivalTimeQueue[];
+
+
+
 extern int baseDaemonsInProgramList;
 # 3 "OperatingSystem.c" 2
 # 1 "MMU.h" 1
@@ -2859,6 +2868,9 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 
  OperatingSystem_PrepareDaemons(daemonsIndex);
 
+ ComputerSystem_FillInArrivalTimeQueue();
+ OperatingSystem_PrintStatus();
+
 
 
  OperatingSystem_LongTermScheduler();
@@ -2914,9 +2926,9 @@ int OperatingSystem_LongTermScheduler() {
   numberOfSuccessfullyCreatedProcesses=0;
 
  for (i=0; programList[i]!=
-# 151 "OperatingSystem.c" 3 4
+# 154 "OperatingSystem.c" 3 4
                           ((void *)0) 
-# 151 "OperatingSystem.c"
+# 154 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
   switch(PID){

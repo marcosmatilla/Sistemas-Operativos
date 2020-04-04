@@ -4,6 +4,8 @@
 #include "Simulator.h"
 #include "ComputerSystemBase.h"
 
+#define ARRIVALQUEUE //ex-0 b V3
+
 // Functions prototypes
 void ComputerSystem_PowerOn(int argc, char *argv[], int);
 void ComputerSystem_PowerOff();
