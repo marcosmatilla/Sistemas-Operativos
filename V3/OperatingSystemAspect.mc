@@ -2927,6 +2927,7 @@ int OperatingSystem_LongTermScheduler() {
  int PID, i,
   numberOfSuccessfullyCreatedProcesses=0;
 
+
  while(OperatingSystem_IsThereANewProgram()==1) {
   i = Heap_poll(arrivalTimeQueue, 2, &numberOfProgramsInArrivalTimeQueue);
   PID=OperatingSystem_CreateProcess(i);
@@ -2957,6 +2958,7 @@ int OperatingSystem_LongTermScheduler() {
     else{
      OperatingSystem_MoveToTheREADYState(PID,DAEMONSQUEUE);
     }
+
   }
  }
  if (numberOfSuccessfullyCreatedProcesses >= 1)
@@ -3286,7 +3288,7 @@ void OperatingSystem_PrintReadyToRunQueue(){
 
 
 void OperatingSystem_HandleClockInterrupt(){
- int process, changeQueue, queueToExecute;
+ int process, changeQueue, queueToExecute, unlocked;
 
  OperatingSystem_ShowTime('i');
  numberOfClockInterrupts++;
@@ -3297,8 +3299,14 @@ void OperatingSystem_HandleClockInterrupt(){
   OperatingSystem_ExtractFromBlocked();
   OperatingSystem_MoveToTheREADYState(process,processTable[executingProcessID].queueID);
   process=Heap_getFirst(sleepingProcessesQueue,numberOfSleepingProcesses);
-  OperatingSystem_PrintStatus();
+  unlocked = 1;
+ }
+
+ int newProcess = OperatingSystem_LongTermScheduler();
+
+ if(unlocked || newProcess > 0){
   queueToExecute = OperatingSystem_CheckQueue();
+  OperatingSystem_PrintStatus();
   if(queueToExecute != -1) {
    changeQueue = Heap_getFirst(readyToRunQueue[queueToExecute],numberOfReadyToRunProcesses[queueToExecute]);
 
@@ -3311,10 +3319,11 @@ void OperatingSystem_HandleClockInterrupt(){
     OperatingSystem_PrintStatus();
    }
   }
-
  }
 
 }
+
+
 
 
 int OperatingSystem_ExtractFromBlocked() {

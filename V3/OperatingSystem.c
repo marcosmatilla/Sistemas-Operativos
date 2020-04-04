@@ -153,6 +153,7 @@ int OperatingSystem_LongTermScheduler() {
 	int PID, i,
 		numberOfSuccessfullyCreatedProcesses=0;
 	
+	//ex-2 V3
 	while(OperatingSystem_IsThereANewProgram()==1) {
 		i = Heap_poll(arrivalTimeQueue, QUEUE_ARRIVAL, &numberOfProgramsInArrivalTimeQueue);
 		PID=OperatingSystem_CreateProcess(i);
@@ -182,7 +183,8 @@ int OperatingSystem_LongTermScheduler() {
 				}
 				else{
 					OperatingSystem_MoveToTheREADYState(PID,DAEMONSQUEUE);
-				}		
+				}	
+				
 		}
 	}
 	if (numberOfSuccessfullyCreatedProcesses >= 1)
@@ -512,7 +514,7 @@ void OperatingSystem_PrintReadyToRunQueue(){
 //ex-2 V2
 // In OperatingSystem.c Exercise 2-b of V2
 void OperatingSystem_HandleClockInterrupt(){ 
-	int process, changeQueue, queueToExecute;
+	int process, changeQueue, queueToExecute, unlocked;
 	//ex-4 V2
 	OperatingSystem_ShowTime(INTERRUPT);
 	numberOfClockInterrupts++;
@@ -523,8 +525,14 @@ void OperatingSystem_HandleClockInterrupt(){
 		OperatingSystem_ExtractFromBlocked();
 		OperatingSystem_MoveToTheREADYState(process,processTable[executingProcessID].queueID);
 		process=Heap_getFirst(sleepingProcessesQueue,numberOfSleepingProcesses);
-		OperatingSystem_PrintStatus();
+		unlocked = 1;
+	}
+
+	int newProcess = OperatingSystem_LongTermScheduler(); //ex 3-a V3
+
+	if(unlocked || newProcess > 0){ //ex 3-b V3
 		queueToExecute = OperatingSystem_CheckQueue();
+		OperatingSystem_PrintStatus();//6b  v2
 		if(queueToExecute != -1) {
 			changeQueue = Heap_getFirst(readyToRunQueue[queueToExecute],numberOfReadyToRunProcesses[queueToExecute]);
 		
@@ -537,11 +545,12 @@ void OperatingSystem_HandleClockInterrupt(){
 				OperatingSystem_PrintStatus();  
 			}
 		}
-
 	}
 
 }
 //end ex-2 V2
+
+
 
 int OperatingSystem_ExtractFromBlocked() {
 	int selectedProcess=NOPROCESS;
