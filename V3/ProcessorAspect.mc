@@ -197,10 +197,12 @@ extern int endSimulationTime;
 # 6 "ComputerSystem.h" 2
 
 
+
+
 void ComputerSystem_PowerOn(int argc, char *argv[], int);
 void ComputerSystem_PowerOff();
 void OperatingSystem_ShowTime(char);
-# 34 "ComputerSystem.h"
+# 36 "ComputerSystem.h"
 typedef struct ProgramData {
     char *executableName;
     unsigned int arrivalTime;

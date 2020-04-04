@@ -94,7 +94,10 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 	// Include in program list  all system daemon processes
 	OperatingSystem_PrepareDaemons(daemonsIndex);
 
-	//ex-15
+	//ComputerSystem_FillInArrivalTimeQueue(); //ex-0 c V3
+	//OperatingSystem_PrintStatus(); //ex-0 d V3
+
+	//ex-15 V1
 	// Create all user processes from the information given in the command line
 	OperatingSystem_LongTermScheduler(); 
 	if( numberOfNotTerminatedUserProcesses == 0){
@@ -440,14 +443,12 @@ void OperatingSystem_HandleSystemCall() {
 			queueID = processTable[executingProcessID].queueID;
 			if(numberOfReadyToRunProcesses[queueID]>0){
 				process = OperatingSystem_ExtractFromReadyToRun(queueID); //coger el primero con get
-				if(executingProcessID!=process){ //sobra
-					if(processTable[executingProcessID].priority == processTable[process].priority){
-						OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
-						ComputerSystem_DebugMessage(115,SHORTTERMSCHEDULE,processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
-						OperatingSystem_PreemptRunningProcess();
-						OperatingSystem_Dispatch(process);
-						OperatingSystem_PrintStatus();
-					}
+				if(processTable[executingProcessID].priority == processTable[process].priority){
+					OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
+					ComputerSystem_DebugMessage(115,SHORTTERMSCHEDULE,processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
+					OperatingSystem_PreemptRunningProcess();
+					OperatingSystem_Dispatch(process);
+					OperatingSystem_PrintStatus();
 				}
 			}
 			break;
@@ -480,55 +481,27 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 
 }
 
+
 //ex-11
 //muestra en pantalla el contenido de la cola de procesos LISTOS
 //verde se refieren a identificadores de procesos (PID’s) incluidos
 //	en cola y los números en color negro, serán sus prioridades.
 void OperatingSystem_PrintReadyToRunQueue(){
-	int i,PID,j;
+	int i;
 	OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
-	ComputerSystem_DebugMessage(106,SHORTTERMSCHEDULE);
-	for(i=0; i<NUMBEROFQUEUES; i++){
-		if(i==USERPROCESSQUEUE) {
-			if(numberOfReadyToRunProcesses[i] != 0){
-				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE);
-			}
-			else{
-				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE);
-				ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
-			}
-			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
-				PID=readyToRunQueue[i][j].info;
-				if(j==numberOfReadyToRunProcesses[i]-1){
-					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,"\n");
-				}
-				else{
-					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,",");
-				}
-			}
-		}
-		if(i==DAEMONSQUEUE) {
-			if(numberOfReadyToRunProcesses[i] != 0)
-				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE);
-			else{
-				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE);
-				ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);	
-			}
-			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
-				PID=readyToRunQueue[i][j].info;
-				if(j==numberOfReadyToRunProcesses[i]-1){
-					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,"\n");
-				}
-				else{
-					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,",");
-				}
-			}
-		}		
+	ComputerSystem_DebugMessage(106, SHORTTERMSCHEDULE);
+	ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE);
+	for (i=0; i<numberOfReadyToRunProcesses[USERPROCESSQUEUE];i++){
+		ComputerSystem_DebugMessage(107, SHORTTERMSCHEDULE,readyToRunQueue[USERPROCESSQUEUE][i].info, processTable[readyToRunQueue[USERPROCESSQUEUE][i].info].priority);
 	}
-
-
+	ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
+	ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE);
+	for (i=0; i<numberOfReadyToRunProcesses[DAEMONSQUEUE];i++){
+		ComputerSystem_DebugMessage(107, SHORTTERMSCHEDULE,readyToRunQueue[DAEMONSQUEUE][i].info, processTable[readyToRunQueue[DAEMONSQUEUE][i].info].priority);
+	}
+	ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
 }
-//end ex-11
+//end ex-11 */
 
 //ex-2 V2
 // In OperatingSystem.c Exercise 2-b of V2

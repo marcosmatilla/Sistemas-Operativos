@@ -59,10 +59,12 @@ extern int endSimulationTime;
 # 6 "ComputerSystem.h" 2
 
 
+
+
 void ComputerSystem_PowerOn(int argc, char *argv[], int);
 void ComputerSystem_PowerOff();
 void OperatingSystem_ShowTime(char);
-# 34 "ComputerSystem.h"
+# 36 "ComputerSystem.h"
 typedef struct ProgramData {
     char *executableName;
     unsigned int arrivalTime;
@@ -2861,6 +2863,10 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 
 
 
+
+
+
+
  OperatingSystem_LongTermScheduler();
  if( numberOfNotTerminatedUserProcesses == 0){
   OperatingSystem_ReadyToShutdown();
@@ -2914,9 +2920,9 @@ int OperatingSystem_LongTermScheduler() {
   numberOfSuccessfullyCreatedProcesses=0;
 
  for (i=0; programList[i]!=
-# 151 "OperatingSystem.c" 3 4
+# 155 "OperatingSystem.c" 3 4
                           ((void *)0) 
-# 151 "OperatingSystem.c"
+# 155 "OperatingSystem.c"
                                && i<20 ; i++) {
   PID=OperatingSystem_CreateProcess(i);
   switch(PID){
@@ -3209,14 +3215,12 @@ void OperatingSystem_HandleSystemCall() {
    queueID = processTable[executingProcessID].queueID;
    if(numberOfReadyToRunProcesses[queueID]>0){
     process = OperatingSystem_ExtractFromReadyToRun(queueID);
-    if(executingProcessID!=process){
-     if(processTable[executingProcessID].priority == processTable[process].priority){
-      OperatingSystem_ShowTime('s');
-      ComputerSystem_DebugMessage(115,'s',processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
-      OperatingSystem_PreemptRunningProcess();
-      OperatingSystem_Dispatch(process);
-      OperatingSystem_PrintStatus();
-     }
+    if(processTable[executingProcessID].priority == processTable[process].priority){
+     OperatingSystem_ShowTime('s');
+     ComputerSystem_DebugMessage(115,'s',processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
+     OperatingSystem_PreemptRunningProcess();
+     OperatingSystem_Dispatch(process);
+     OperatingSystem_PrintStatus();
     }
    }
    break;
@@ -3248,56 +3252,22 @@ void OperatingSystem_InterruptLogic(int entryPoint){
  }
 
 }
-
-
-
-
-
+# 536 "OperatingSystem.c"
 void OperatingSystem_PrintReadyToRunQueue(){
- int i,PID,j;
+ int i;
  OperatingSystem_ShowTime('s');
- ComputerSystem_DebugMessage(106,'s');
- for(i=0; i<2; i++){
-  if(i==USERPROCESSQUEUE) {
-   if(numberOfReadyToRunProcesses[i] != 0){
-    ComputerSystem_DebugMessage(112,'s');
-   }
-   else{
-    ComputerSystem_DebugMessage(112,'s');
-    ComputerSystem_DebugMessage(108,'s');
-   }
-   for(j=0; j<numberOfReadyToRunProcesses[i];j++){
-    PID=readyToRunQueue[i][j].info;
-    if(j==numberOfReadyToRunProcesses[i]-1){
-     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,"\n");
-    }
-    else{
-     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,",");
-    }
-   }
-  }
-  if(i==DAEMONSQUEUE) {
-   if(numberOfReadyToRunProcesses[i] != 0)
-    ComputerSystem_DebugMessage(113,'s');
-   else{
-    ComputerSystem_DebugMessage(113,'s');
-    ComputerSystem_DebugMessage(108,'s');
-   }
-   for(j=0; j<numberOfReadyToRunProcesses[i];j++){
-    PID=readyToRunQueue[i][j].info;
-    if(j==numberOfReadyToRunProcesses[i]-1){
-     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,"\n");
-    }
-    else{
-     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,",");
-    }
-   }
-  }
+ ComputerSystem_DebugMessage(106, 's');
+ ComputerSystem_DebugMessage(112,'s');
+ for (i=0; i<numberOfReadyToRunProcesses[USERPROCESSQUEUE];i++){
+  ComputerSystem_DebugMessage(107, 's',readyToRunQueue[USERPROCESSQUEUE][i].info, processTable[readyToRunQueue[USERPROCESSQUEUE][i].info].priority);
  }
-
-
+ ComputerSystem_DebugMessage(108,'s');
+ ComputerSystem_DebugMessage(113,'s');
+ for (i=0; i<numberOfReadyToRunProcesses[DAEMONSQUEUE];i++){
+  ComputerSystem_DebugMessage(107, 's',readyToRunQueue[DAEMONSQUEUE][i].info, processTable[readyToRunQueue[DAEMONSQUEUE][i].info].priority);
+ }
+ ComputerSystem_DebugMessage(108,'s');
 }
-
 
 
 

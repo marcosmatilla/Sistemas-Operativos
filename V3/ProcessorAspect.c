@@ -171,18 +171,18 @@ extern int intervalBetweenInterrupts;
 #line 17 "ComputerSystemBase.h"
 extern int endSimulationTime; 
 # 6 "ComputerSystemBase.h" 2
-# 8 "ComputerSystem.h" 2
+# 10 "ComputerSystem.h" 2
 void ComputerSystem_PowerOn(int argc, char *argv[], int ); 
-#line 9 "ComputerSystem.h"
+#line 11 "ComputerSystem.h"
 void ComputerSystem_PowerOff(); 
-#line 10 "ComputerSystem.h"
+#line 12 "ComputerSystem.h"
 void OperatingSystem_ShowTime(char ); 
-#line 38 "ComputerSystem.h"
+#line 40 "ComputerSystem.h"
 typedef struct ProgramData {char *executableName; unsigned int arrivalTime; unsigned int type; 
 }PROGRAMS_DATA; 
-#line 42 "ComputerSystem.h"
+#line 44 "ComputerSystem.h"
 extern  PROGRAMS_DATA *programList[20]; 
-# 34 "ComputerSystem.h" 
+# 36 "ComputerSystem.h" 
 # 5 "OperatingSystem.h" 2
 # 1 "/usr/include/stdio.h" 1 3 4
 # 27 "/usr/include/stdio.h" 3 4

@@ -18,9 +18,13 @@ void ComputerSystem_ShowTime(char); //ex-1
 int Clock_GetTime();
 
 
+//ex-0 a V3
+//heapItem arrivalTimeQueue[PROGRAMSMAXNUMBER];
+//int numberOfProgramsInArrivalTimeQueue=0;
+
 // Powers on of the Computer System.
 void ComputerSystem_PowerOn(int argc, char *argv[], int paramIndex) {
-	
+
 	// Obtain a list of programs in the command line
 	int daemonsBaseIndex = ComputerSystem_ObtainProgramList(argc, argv, paramIndex);
 
@@ -51,7 +55,7 @@ void ComputerSystem_PowerOn(int argc, char *argv[], int paramIndex) {
 void ComputerSystem_PowerOff() {
 	// Show message in red colour: "END of the simulation\n" 
 	ComputerSystem_ShowTime(SHUTDOWN);
-	ComputerSystem_DebugMessage(99,SHUTDOWN,"END of the simulation\n"); .
+	ComputerSystem_DebugMessage(99,SHUTDOWN,"END of the simulation\n");
 	
 	exit(0);
 }
