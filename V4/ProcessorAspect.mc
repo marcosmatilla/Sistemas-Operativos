@@ -1366,6 +1366,8 @@ void Processor_ShowTime(char);
 int Clock_GetTime();
 int OperatingSystem_GetExecutingProcessID();
 
+int Processor_GetException();
+
 
 extern char *InstructionNames[];
 
@@ -1494,7 +1496,7 @@ void Processor_DecodeAndExecuteInstruction() {
 
   case DIV_INST:
    if (operand2 == 0)
-    Processor_RaiseException(EXCEPTION_BIT);
+    Processor_RaiseException(DIVISIONBYZERO);
 
    else {
     registerAccumulator_CPU=operand1 / operand2;
@@ -1504,7 +1506,7 @@ void Processor_DecodeAndExecuteInstruction() {
 
 
   case TRAP_INST:
-   Processor_RaiseException(SYSCALL_BIT);
+   Processor_RaiseException(INVALIDPROCESSORMODE);
 
    registerA_CPU=operand1;
    registerPC_CPU++;
@@ -1572,7 +1574,7 @@ void Processor_DecodeAndExecuteInstruction() {
    }
    else
    {
-    Processor_RaiseException(EXCEPTION_BIT);
+    Processor_RaiseException(INVALIDPROCESSORMODE);
 
    }
    break;
@@ -1593,7 +1595,7 @@ void Processor_DecodeAndExecuteInstruction() {
     return;
    }
    else{
-    Processor_RaiseException(EXCEPTION_BIT);
+    Processor_RaiseException(INVALIDPROCESSORMODE);
 
    }
    break;
@@ -1605,7 +1607,7 @@ void Processor_DecodeAndExecuteInstruction() {
     registerPSW_CPU=Processor_CopyFromSystemStack(300 -2);
    }
    else{
-    Processor_RaiseException(EXCEPTION_BIT);
+    Processor_RaiseException(INVALIDPROCESSORMODE);
 
    }
    break;
@@ -1673,4 +1675,8 @@ char * Processor_ShowPSW(){
 
 void Processor_ShowTime(char section) {
  ComputerSystem_DebugMessage(Processor_PSW_BitState(EXECUTION_MODE_BIT)?95:94,section,Clock_GetTime());
+}
+
+int Processor_GetException(){
+ return registerB_CPU;
 }

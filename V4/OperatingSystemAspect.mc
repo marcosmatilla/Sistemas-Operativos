@@ -2823,6 +2823,9 @@ int numberOfSleepingProcesses=0;
 char * statesNames [5]={"NEW","READY","EXECUTING","BLOCKED","EXIT"};
 
 
+char * exceptions[4]={"division by zero", "invalid processor mode", "invalid address", "invalid instruction"};
+
+
 PCB processTable[4];
 
 
@@ -3159,9 +3162,12 @@ void OperatingSystem_SaveContext(int PID) {
 void OperatingSystem_HandleException() {
 
 
- OperatingSystem_ShowTime('p');
- Processor_RaiseException('p');
- ComputerSystem_DebugMessage(71,'p',executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
+
+
+
+ OperatingSystem_ShowTime('i');
+ int exception = Processor_GetException();
+ ComputerSystem_DebugMessage(140, 'i', executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, exceptions[exception]);
 
  OperatingSystem_TerminateProcess();
  OperatingSystem_PrintStatus();
@@ -3180,9 +3186,6 @@ void OperatingSystem_TerminateProcess() {
  if (programList[processTable[executingProcessID].programListIndex]->type==USERPROGRAM)
 
   numberOfNotTerminatedUserProcesses--;
-
-
-
 
  if (numberOfNotTerminatedUserProcesses==0) {
   if (executingProcessID==sipID) {

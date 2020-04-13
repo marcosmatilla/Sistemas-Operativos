@@ -46,6 +46,9 @@ int numberOfSleepingProcesses=0;
 //procesos
 char * statesNames [5]={"NEW","READY","EXECUTING","BLOCKED","EXIT"};
 
+//Exercise 2 of V4
+char * exceptions[4]={"division by zero", "invalid processor mode", "invalid address", "invalid instruction"}; 
+
 // The process table
 PCB processTable[PROCESSTABLEMAXSIZE];
 
@@ -383,9 +386,12 @@ void OperatingSystem_SaveContext(int PID) {
 void OperatingSystem_HandleException() {
   
 	// Show message "Process [executingProcessID] has generated an exception and is terminating\n"
-	OperatingSystem_ShowTime(SYSPROC);
-	Processor_RaiseException(SYSPROC); //Exercise 1-c of V4
-	ComputerSystem_DebugMessage(71,SYSPROC,executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
+	//OperatingSystem_ShowTime(SYSPROC);
+	//ComputerSystem_DebugMessage(71,SYSPROC,executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
+		
+	OperatingSystem_ShowTime(INTERRUPT); 
+	int exception = Processor_GetException();
+	ComputerSystem_DebugMessage(140, INTERRUPT, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, exceptions[exception]);
 	
 	OperatingSystem_TerminateProcess();
 	OperatingSystem_PrintStatus();
@@ -405,9 +411,6 @@ void OperatingSystem_TerminateProcess() {
 		// One more user process that has terminated
 		numberOfNotTerminatedUserProcesses--;
 
-	/*if (numberOfProgramsInArrivalTimeQueue == 0){ //ex 4-c V3
-        OperatingSystem_ReadyToShutdown();
-    }*/
 	if (numberOfNotTerminatedUserProcesses==0) {
 		if (executingProcessID==sipID) {
 			// finishing sipID, change PC to address of OS HALT instruction

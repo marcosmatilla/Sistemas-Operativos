@@ -14,6 +14,8 @@ void Processor_ShowTime(char); //ex-1 V2
 int Clock_GetTime();
 int OperatingSystem_GetExecutingProcessID();
 
+int Processor_GetException(); //Exercise 2 of V4
+
 // External data
 extern char *InstructionNames[];
 
@@ -142,7 +144,7 @@ void Processor_DecodeAndExecuteInstruction() {
 		// Instruction DIV
 		case DIV_INST: 
 			if (operand2 == 0)
-				Processor_RaiseException(EXCEPTION_BIT); //Exercise 1-c of V4
+				Processor_RaiseException(DIVISIONBYZERO); //Exercise 1-c of V4
 				//Processor_RaiseInterrupt(EXCEPTION_BIT); 
 			else {
 				registerAccumulator_CPU=operand1 / operand2;
@@ -152,7 +154,7 @@ void Processor_DecodeAndExecuteInstruction() {
 			  
 		// Instruction TRAP
 		case TRAP_INST: 
-			Processor_RaiseException(SYSCALL_BIT); //Exercise 1-c of V4
+			Processor_RaiseException(INVALIDPROCESSORMODE); //Exercise 1-c of V4
 			//Processor_RaiseInterrupt(SYSCALL_BIT);
 			registerA_CPU=operand1;
 			registerPC_CPU++;
@@ -220,7 +222,7 @@ void Processor_DecodeAndExecuteInstruction() {
 			}
 			else
 			{
-				Processor_RaiseException(EXCEPTION_BIT); //Exercise 1-c of V4
+				Processor_RaiseException(INVALIDPROCESSORMODE); //Exercise 1-c of V4
 				//Processor_RaiseInterrupt(EXCEPTION_BIT);
 			}
 			break;
@@ -241,7 +243,7 @@ void Processor_DecodeAndExecuteInstruction() {
 				return; // Note: message show before... for operating system messages after...
 			}
 			else{
-				Processor_RaiseException(EXCEPTION_BIT); //Exercise 1-c of V4
+				Processor_RaiseException(INVALIDPROCESSORMODE); //Exercise 1-c of V4
 				//Processor_RaiseInterrupt(EXCEPTION_BIT);
 			}
 			break;
@@ -253,7 +255,7 @@ void Processor_DecodeAndExecuteInstruction() {
 				registerPSW_CPU=Processor_CopyFromSystemStack(MAINMEMORYSIZE-2);
 			}
 			else{
-				Processor_RaiseException(EXCEPTION_BIT); //Exercise 1-c of V4
+				Processor_RaiseException(INVALIDPROCESSORMODE); //Exercise 1-c of V4
 				//Processor_RaiseInterrupt(EXCEPTION_BIT);
 			}
 			break;		
@@ -323,3 +325,6 @@ void Processor_ShowTime(char section) {
 	ComputerSystem_DebugMessage(Processor_PSW_BitState(EXECUTION_MODE_BIT)?95:94,section,Clock_GetTime());
 }
 
+int Processor_GetException(){
+	return registerB_CPU;
+}
