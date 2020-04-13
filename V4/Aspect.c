@@ -584,6 +584,8 @@ extern int sipID;
 void OperatingSystem_Initialize(); 
 #line 59 "OperatingSystem.h"
 void OperatingSystem_InterruptLogic(int ); 
+#line 61 "OperatingSystem.h"
+int OperatingSystem_GetExecutingProcessID(); 
 #line 10 "OperatingSystemBase.h"
 int OperatingSystem_ObtainAnEntryInTheProcessTable(); 
 #line 11 "OperatingSystemBase.h"

@@ -58,5 +58,5 @@ extern int sipID;
 void OperatingSystem_Initialize();
 void OperatingSystem_InterruptLogic(int);
 
-
+int OperatingSystem_GetExecutingProcessID(); //ex-1 V3
 #endif

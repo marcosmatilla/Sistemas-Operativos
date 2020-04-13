@@ -954,6 +954,8 @@ extern int sipID;
 
 void OperatingSystem_Initialize();
 void OperatingSystem_InterruptLogic(int);
+
+int OperatingSystem_GetExecutingProcessID();
 # 2 "OperatingSystem.c" 2
 # 1 "OperatingSystemBase.h" 1
 # 10 "OperatingSystemBase.h"

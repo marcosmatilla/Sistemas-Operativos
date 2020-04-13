@@ -32,7 +32,7 @@ int OperatingSystem_ExtractFromBlocked();
 int OperatingSystem_CheckQueue();
 int OperatingSystem_ExtractFromBlocked();
 int OperatingSystem_CheckExecutingPriority(int);
-int OperatingSystem_GetExecutingProcessID(); //ex-1 V3
+int OperatingSystem_GetExecutingProcessID();
 
 //ex-4
 //Number of clock interruptions

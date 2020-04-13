@@ -1093,6 +1093,8 @@ extern int sipID;
 
 void OperatingSystem_Initialize();
 void OperatingSystem_InterruptLogic(int);
+
+int OperatingSystem_GetExecutingProcessID();
 # 4 "Processor.c" 2
 
 
