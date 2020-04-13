@@ -121,18 +121,15 @@ void Processor_GetCodedInstruction(char * , BUSDATACELL );
 int Processor_ToInstruction(char *);
 void Processor_RaiseException(int);
 # 6 "Processor.h" 2
-
-
-
-
-
-
-
+# 15 "Processor.h"
 enum PSW_BITS {POWEROFF_BIT=0, ZERO_BIT=1, NEGATIVE_BIT=2, OVERFLOW_BIT=3, EXECUTION_MODE_BIT=7, INTERRUPT_MASKED_BIT=15};
 
 
 
 enum INT_BITS {SYSCALL_BIT=2, EXCEPTION_BIT=6, CLOCKINT_BIT=9};
+
+
+enum EXCEPTIONS {DIVISIONBYZERO, INVALIDPROCESSORMODE, INVALIDADDRESS, INVALIDINSTRUCTION};
 
 
 void Processor_InitializeInterruptVectorTable();
@@ -1382,6 +1379,8 @@ BUSDATACELL registerMBR_CPU;
 int registerCTRL_CPU;
 
 int registerA_CPU;
+
+int registerB_CPU;
 
 int interruptLines_CPU;
 

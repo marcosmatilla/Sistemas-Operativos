@@ -384,6 +384,7 @@ void OperatingSystem_HandleException() {
   
 	// Show message "Process [executingProcessID] has generated an exception and is terminating\n"
 	OperatingSystem_ShowTime(SYSPROC);
+	Processor_RaiseException(SYSPROC); //Exercise 1-c of V4
 	ComputerSystem_DebugMessage(71,SYSPROC,executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
 	
 	OperatingSystem_TerminateProcess();

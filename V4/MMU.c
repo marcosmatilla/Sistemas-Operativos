@@ -19,7 +19,7 @@ void MMU_SetCTRL (int ctrl) {
 	switch (registerCTRL_MMU) {
   	case CTRLREAD:
 			if (Processor_PSW_BitState(EXECUTION_MODE_BIT)){ // Protected mode
-				if (registerMAR_MMU < MAINMEMORYSIZE){
+				if (registerMAR_MMU >= 0 && registerMAR_MMU < MAINMEMORYSIZE ){ //Exercise 1-d of V4
 					// Send to the main memory HW the physical address to write in
 					Buses_write_AddressBus_From_To(MMU, MAINMEMORY);
 					// Tell the main memory HW to read
@@ -52,7 +52,7 @@ void MMU_SetCTRL (int ctrl) {
 			break;
   	case CTRLWRITE:
 			if (Processor_PSW_BitState(EXECUTION_MODE_BIT)) // Protected mode
-				if (registerMAR_MMU < MAINMEMORYSIZE) {
+				if (registerMAR_MMU >= 0 && registerMAR_MMU < MAINMEMORYSIZE) { //Exercise 1-d of V4
 					// Send to the main memory HW the physical address to write in
 					Buses_write_AddressBus_From_To(MMU, MAINMEMORY);
 					// Tell the main memory HW to read

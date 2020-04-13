@@ -28,6 +28,8 @@ int registerCTRL_CPU; // Control bus Register
 
 int registerA_CPU; // General purpose register
 
+int registerB_CPU; // Another general purpose register Exercise 1-a of V4
+
 int interruptLines_CPU; // Processor interrupt lines
 
 // interrupt vector table: an array of handle interrupt memory addresses routines  
