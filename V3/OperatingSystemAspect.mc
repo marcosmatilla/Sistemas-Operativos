@@ -2876,7 +2876,7 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 
 
  OperatingSystem_LongTermScheduler();
- if( numberOfNotTerminatedUserProcesses == 0){
+ if( numberOfNotTerminatedUserProcesses == 0 && numberOfProgramsInArrivalTimeQueue == 0){
   OperatingSystem_ReadyToShutdown();
  }
 
@@ -3179,6 +3179,8 @@ void OperatingSystem_TerminateProcess() {
   numberOfNotTerminatedUserProcesses--;
 
 
+
+
  if (numberOfNotTerminatedUserProcesses==0) {
   if (executingProcessID==sipID) {
 
@@ -3188,7 +3190,8 @@ void OperatingSystem_TerminateProcess() {
    return;
   }
 
-  OperatingSystem_ReadyToShutdown();
+  if(numberOfProgramsInArrivalTimeQueue == 0)
+   OperatingSystem_ReadyToShutdown();
  }
 
  selectedProcess=OperatingSystem_ShortTermScheduler();
@@ -3269,19 +3272,48 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 
 
 void OperatingSystem_PrintReadyToRunQueue(){
- int i;
+ int i,PID,j;
  OperatingSystem_ShowTime('s');
- ComputerSystem_DebugMessage(106, 's');
- ComputerSystem_DebugMessage(112,'s');
- for (i=0; i<numberOfReadyToRunProcesses[USERPROCESSQUEUE];i++){
-  ComputerSystem_DebugMessage(107, 's',readyToRunQueue[USERPROCESSQUEUE][i].info, processTable[readyToRunQueue[USERPROCESSQUEUE][i].info].priority);
+ ComputerSystem_DebugMessage(106,'s');
+ for(i=0; i<2; i++){
+  if(i==USERPROCESSQUEUE) {
+   if(numberOfReadyToRunProcesses[i] != 0){
+    ComputerSystem_DebugMessage(112,'s');
+   }
+   else{
+    ComputerSystem_DebugMessage(112,'s');
+    ComputerSystem_DebugMessage(108,'s');
+   }
+   for(j=0; j<numberOfReadyToRunProcesses[i];j++){
+    PID=readyToRunQueue[i][j].info;
+    if(j==numberOfReadyToRunProcesses[i]-1){
+     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,"\n");
+    }
+    else{
+     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,",");
+    }
+   }
+  }
+  if(i==DAEMONSQUEUE) {
+   if(numberOfReadyToRunProcesses[i] != 0)
+    ComputerSystem_DebugMessage(113,'s');
+   else{
+    ComputerSystem_DebugMessage(113,'s');
+    ComputerSystem_DebugMessage(108,'s');
+   }
+   for(j=0; j<numberOfReadyToRunProcesses[i];j++){
+    PID=readyToRunQueue[i][j].info;
+    if(j==numberOfReadyToRunProcesses[i]-1){
+     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,"\n");
+    }
+    else{
+     ComputerSystem_DebugMessage(107,'s',PID,processTable[PID].priority,",");
+    }
+   }
+  }
  }
- ComputerSystem_DebugMessage(108,'s');
- ComputerSystem_DebugMessage(113,'s');
- for (i=0; i<numberOfReadyToRunProcesses[DAEMONSQUEUE];i++){
-  ComputerSystem_DebugMessage(107, 's',readyToRunQueue[DAEMONSQUEUE][i].info, processTable[readyToRunQueue[DAEMONSQUEUE][i].info].priority);
- }
- ComputerSystem_DebugMessage(108,'s');
+
+
 }
 
 
@@ -3303,6 +3335,12 @@ void OperatingSystem_HandleClockInterrupt(){
  }
 
  int newProcess = OperatingSystem_LongTermScheduler();
+
+  if (numberOfNotTerminatedUserProcesses == 0 && numberOfProgramsInArrivalTimeQueue == 0)
+    {
+        OperatingSystem_ReadyToShutdown();
+    }
+
 
  if(unlocked || newProcess > 0){
   queueToExecute = OperatingSystem_CheckQueue();

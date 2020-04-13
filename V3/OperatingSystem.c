@@ -99,13 +99,13 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 	ComputerSystem_FillInArrivalTimeQueue(); //ex-0 c V3
 	OperatingSystem_PrintStatus(); //ex-0 d V3
 
-	//ex-15
+	//ex-15 V1
 	// Create all user processes from the information given in the command line
 	OperatingSystem_LongTermScheduler(); 
-	if( numberOfNotTerminatedUserProcesses == 0){
+	if( numberOfNotTerminatedUserProcesses == 0 && numberOfProgramsInArrivalTimeQueue == 0){ //ex 4-a V3
 		OperatingSystem_ReadyToShutdown();
 	}
-	//end ex-15
+	//end ex-15 V1
 
 	if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
 		// Show red message "FATAL ERROR: Missing SIP program!\n"
@@ -404,7 +404,9 @@ void OperatingSystem_TerminateProcess() {
 		// One more user process that has terminated
 		numberOfNotTerminatedUserProcesses--;
 
-	
+	/*if (numberOfProgramsInArrivalTimeQueue == 0){ //ex 4-c V3
+        OperatingSystem_ReadyToShutdown();
+    }*/
 	if (numberOfNotTerminatedUserProcesses==0) {
 		if (executingProcessID==sipID) {
 			// finishing sipID, change PC to address of OS HALT instruction
@@ -414,7 +416,8 @@ void OperatingSystem_TerminateProcess() {
 			return; // Don't dispatch any process
 		}
 		// Simulation must finish, telling sipID to finish
-		OperatingSystem_ReadyToShutdown();
+		if(numberOfProgramsInArrivalTimeQueue == 0)
+			OperatingSystem_ReadyToShutdown();
 	}
 	// Select the next process to execute (sipID if no more user processes)
 	selectedProcess=OperatingSystem_ShortTermScheduler();
@@ -495,21 +498,50 @@ void OperatingSystem_InterruptLogic(int entryPoint){
 //verde se refieren a identificadores de procesos (PID’s) incluidos
 //	en cola y los números en color negro, serán sus prioridades.
 void OperatingSystem_PrintReadyToRunQueue(){
-	int i;
+	int i,PID,j;
 	OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
-	ComputerSystem_DebugMessage(106, SHORTTERMSCHEDULE);
-	ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE);
-	for (i=0; i<numberOfReadyToRunProcesses[USERPROCESSQUEUE];i++){
-		ComputerSystem_DebugMessage(107, SHORTTERMSCHEDULE,readyToRunQueue[USERPROCESSQUEUE][i].info, processTable[readyToRunQueue[USERPROCESSQUEUE][i].info].priority);
+	ComputerSystem_DebugMessage(106,SHORTTERMSCHEDULE);
+	for(i=0; i<NUMBEROFQUEUES; i++){
+		if(i==USERPROCESSQUEUE) {
+			if(numberOfReadyToRunProcesses[i] != 0){
+				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE);
+			}
+			else{
+				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE);
+				ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
+			}
+			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
+				PID=readyToRunQueue[i][j].info;
+				if(j==numberOfReadyToRunProcesses[i]-1){
+					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,"\n");
+				}
+				else{
+					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,",");
+				}
+			}
+		}
+		if(i==DAEMONSQUEUE) {
+			if(numberOfReadyToRunProcesses[i] != 0)
+				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE);
+			else{
+				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE);
+				ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);	
+			}
+			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
+				PID=readyToRunQueue[i][j].info;
+				if(j==numberOfReadyToRunProcesses[i]-1){
+					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,"\n");
+				}
+				else{
+					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,",");
+				}
+			}
+		}		
 	}
-	ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
-	ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE);
-	for (i=0; i<numberOfReadyToRunProcesses[DAEMONSQUEUE];i++){
-		ComputerSystem_DebugMessage(107, SHORTTERMSCHEDULE,readyToRunQueue[DAEMONSQUEUE][i].info, processTable[readyToRunQueue[DAEMONSQUEUE][i].info].priority);
-	}
-	ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
+
+
 }
-//end ex-11 */
+//end ex-11
 
 //ex-2 V2
 // In OperatingSystem.c Exercise 2-b of V2
@@ -529,6 +561,12 @@ void OperatingSystem_HandleClockInterrupt(){
 	}
 
 	int newProcess = OperatingSystem_LongTermScheduler(); //ex 3-a V3
+	
+ 	if (numberOfNotTerminatedUserProcesses == 0 && numberOfProgramsInArrivalTimeQueue == 0) //ex 4 b V3
+    {
+        OperatingSystem_ReadyToShutdown();
+    }
+
 
 	if(unlocked || newProcess > 0){ //ex 3-b V3
 		queueToExecute = OperatingSystem_CheckQueue();
