@@ -142,7 +142,8 @@ void Processor_DecodeAndExecuteInstruction() {
 		// Instruction DIV
 		case DIV_INST: 
 			if (operand2 == 0)
-				Processor_RaiseInterrupt(EXCEPTION_BIT); 
+				Processor_RaiseException(EXCEPTION_BIT); //Exercise 1-c of V4
+				//Processor_RaiseInterrupt(EXCEPTION_BIT); 
 			else {
 				registerAccumulator_CPU=operand1 / operand2;
 				registerPC_CPU++;
@@ -151,7 +152,8 @@ void Processor_DecodeAndExecuteInstruction() {
 			  
 		// Instruction TRAP
 		case TRAP_INST: 
-			Processor_RaiseInterrupt(SYSCALL_BIT);
+			Processor_RaiseException(SYSCALL_BIT); //Exercise 1-c of V4
+			//Processor_RaiseInterrupt(SYSCALL_BIT);
 			registerA_CPU=operand1;
 			registerPC_CPU++;
 			break;
@@ -218,7 +220,8 @@ void Processor_DecodeAndExecuteInstruction() {
 			}
 			else
 			{
-				Processor_RaiseInterrupt(EXCEPTION_BIT);
+				Processor_RaiseException(EXCEPTION_BIT); //Exercise 1-c of V4
+				//Processor_RaiseInterrupt(EXCEPTION_BIT);
 			}
 			break;
   
@@ -238,7 +241,8 @@ void Processor_DecodeAndExecuteInstruction() {
 				return; // Note: message show before... for operating system messages after...
 			}
 			else{
-				Processor_RaiseInterrupt(EXCEPTION_BIT);
+				Processor_RaiseException(EXCEPTION_BIT); //Exercise 1-c of V4
+				//Processor_RaiseInterrupt(EXCEPTION_BIT);
 			}
 			break;
 
@@ -249,7 +253,8 @@ void Processor_DecodeAndExecuteInstruction() {
 				registerPSW_CPU=Processor_CopyFromSystemStack(MAINMEMORYSIZE-2);
 			}
 			else{
-				Processor_RaiseInterrupt(EXCEPTION_BIT);
+				Processor_RaiseException(EXCEPTION_BIT); //Exercise 1-c of V4
+				//Processor_RaiseInterrupt(EXCEPTION_BIT);
 			}
 			break;		
 		//end ex-16
