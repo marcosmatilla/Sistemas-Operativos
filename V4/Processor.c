@@ -264,6 +264,7 @@ void Processor_DecodeAndExecuteInstruction() {
 		// Unknown instruction
 		default : 
 			registerPC_CPU++;
+			Processor_RaiseException(INVALIDINSTRUCTION);
 			break;
 	}
 	

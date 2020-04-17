@@ -29,6 +29,7 @@ void MMU_SetCTRL (int ctrl) {
 			  		registerCTRL_MMU |= CTRL_SUCCESS;
 				}
 				else {
+					Processor_RaiseException(INVALIDADDRESS);  //Exercise 1-d of V4
 					// Fail
 					registerCTRL_MMU |= CTRL_FAIL;
 				}
@@ -62,6 +63,7 @@ void MMU_SetCTRL (int ctrl) {
 			  	registerCTRL_MMU |= CTRL_SUCCESS;
 				}
 				else {
+					Processor_RaiseException(INVALIDADDRESS);  //Exercise 1-d of V4
 					// Fail
 					registerCTRL_MMU |= CTRL_FAIL;
 				}

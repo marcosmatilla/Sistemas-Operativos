@@ -105,9 +105,6 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 	//ex-15 V1
 	// Create all user processes from the information given in the command line
 	OperatingSystem_LongTermScheduler(); 
-	if( numberOfNotTerminatedUserProcesses == 0 && numberOfProgramsInArrivalTimeQueue == 0){ //ex 4-a V3
-		OperatingSystem_ReadyToShutdown();
-	}
 	//end ex-15 V1
 
 	if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
@@ -192,6 +189,10 @@ int OperatingSystem_LongTermScheduler() {
 	}
 	if (numberOfSuccessfullyCreatedProcesses >= 1)
 		OperatingSystem_PrintStatus();
+
+	if(numberOfNotTerminatedUserProcesses==0 && numberOfProgramsInArrivalTimeQueue==0) //Ex-4 a V3
+		OperatingSystem_ReadyToShutdown();
+
 	// Return the number of succesfully created processes
 	return numberOfSuccessfullyCreatedProcesses;
 }
@@ -477,6 +478,12 @@ void OperatingSystem_HandleSystemCall() {
 			OperatingSystem_PrintStatus();
 			break;
 		//en ex-5 V2
+		default:
+			OperatingSystem_ShowTime(INTERRUPT);
+			int exception = Processor_GetException();
+			ComputerSystem_DebugMessage(140, INTERRUPT, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, exceptions[exception]);
+			OperatingSystem_TerminateProcess();
+			OperatingSystem_PrintStatus();
 	}
 
 }

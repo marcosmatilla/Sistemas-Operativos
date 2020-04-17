@@ -1616,6 +1616,7 @@ void Processor_DecodeAndExecuteInstruction() {
 
   default :
    registerPC_CPU++;
+   Processor_RaiseException(INVALIDINSTRUCTION);
    break;
  }
 
