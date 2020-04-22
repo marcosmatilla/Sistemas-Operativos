@@ -15,6 +15,7 @@ int Clock_GetTime();
 int OperatingSystem_GetExecutingProcessID();
 
 int Processor_GetException(); //Exercise 2 of V4
+void Processor_RaiseException(int);
 
 // External data
 extern char *InstructionNames[];
@@ -154,8 +155,7 @@ void Processor_DecodeAndExecuteInstruction() {
 			  
 		// Instruction TRAP
 		case TRAP_INST: 
-			Processor_RaiseException(INVALIDPROCESSORMODE); //Exercise 1-c of V4
-			//Processor_RaiseInterrupt(SYSCALL_BIT);
+			Processor_RaiseInterrupt(SYSCALL_BIT);
 			registerA_CPU=operand1;
 			registerPC_CPU++;
 			break;

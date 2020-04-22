@@ -1367,6 +1367,7 @@ int Clock_GetTime();
 int OperatingSystem_GetExecutingProcessID();
 
 int Processor_GetException();
+void Processor_RaiseException(int);
 
 
 extern char *InstructionNames[];
@@ -1506,8 +1507,8 @@ void Processor_DecodeAndExecuteInstruction() {
 
 
   case TRAP_INST:
-   Processor_RaiseException(INVALIDPROCESSORMODE);
 
+   Processor_RaiseInterrupt(SYSCALL_BIT);
    registerA_CPU=operand1;
    registerPC_CPU++;
    break;

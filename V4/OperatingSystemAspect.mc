@@ -2810,6 +2810,7 @@ int OperatingSystem_ExtractFromBlocked();
 int OperatingSystem_CheckExecutingPriority(int);
 int OperatingSystem_GetExecutingProcessID();
 
+int Processor_GetException();
 
 
 int numberOfClockInterrupts = 0;
@@ -3234,32 +3235,27 @@ void OperatingSystem_HandleSystemCall() {
    queueID = processTable[executingProcessID].queueID;
    if(numberOfReadyToRunProcesses[queueID]>0){
     process = OperatingSystem_ExtractFromReadyToRun(queueID);
-    if(executingProcessID!=process){
-     if(processTable[executingProcessID].priority == processTable[process].priority){
-      OperatingSystem_ShowTime('s');
-      ComputerSystem_DebugMessage(115,'s',processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
-      OperatingSystem_PreemptRunningProcess();
-      OperatingSystem_Dispatch(process);
-      OperatingSystem_PrintStatus();
-     }
+    if(processTable[executingProcessID].priority == processTable[process].priority){
+     OperatingSystem_ShowTime('s');
+     ComputerSystem_DebugMessage(115,'s',processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
+     OperatingSystem_PreemptRunningProcess();
+     OperatingSystem_Dispatch(process);
+     OperatingSystem_PrintStatus();
     }
    }
    break;
-
-
   case SYSCALL_SLEEP:
    OperatingSystem_MoveToTheBLOCKState();
    process = OperatingSystem_ShortTermScheduler();
             OperatingSystem_Dispatch(process);
    OperatingSystem_PrintStatus();
    break;
-
   default:
    OperatingSystem_ShowTime('i');
-   int exception = Processor_GetException();
-   ComputerSystem_DebugMessage(140, 'i', executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, exceptions[exception]);
+   ComputerSystem_DebugMessage(141, 'i', executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, systemCallID);
    OperatingSystem_TerminateProcess();
    OperatingSystem_PrintStatus();
+   break;
  }
 
 }

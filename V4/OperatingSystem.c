@@ -34,6 +34,7 @@ int OperatingSystem_ExtractFromBlocked();
 int OperatingSystem_CheckExecutingPriority(int);
 int OperatingSystem_GetExecutingProcessID();
 
+int Processor_GetException();
 //ex-4
 //Number of clock interruptions
 int numberOfClockInterrupts = 0;
@@ -391,7 +392,7 @@ void OperatingSystem_HandleException() {
 	//ComputerSystem_DebugMessage(71,SYSPROC,executingProcessID,programList[processTable[executingProcessID].programListIndex]->executableName);
 		
 	OperatingSystem_ShowTime(INTERRUPT); 
-	int exception = Processor_GetException();
+	int exception = Processor_GetException();//Exercise 2 of 4
 	ComputerSystem_DebugMessage(140, INTERRUPT, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, exceptions[exception]);
 	
 	OperatingSystem_TerminateProcess();
@@ -458,32 +459,27 @@ void OperatingSystem_HandleSystemCall() {
 			queueID = processTable[executingProcessID].queueID;
 			if(numberOfReadyToRunProcesses[queueID]>0){
 				process = OperatingSystem_ExtractFromReadyToRun(queueID); //coger el primero con get
-				if(executingProcessID!=process){ //sobra
-					if(processTable[executingProcessID].priority == processTable[process].priority){
-						OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
-						ComputerSystem_DebugMessage(115,SHORTTERMSCHEDULE,processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
-						OperatingSystem_PreemptRunningProcess();
-						OperatingSystem_Dispatch(process);
-						OperatingSystem_PrintStatus();
-					}
+				if(processTable[executingProcessID].priority == processTable[process].priority){
+					OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
+					ComputerSystem_DebugMessage(115,SHORTTERMSCHEDULE,processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
+					OperatingSystem_PreemptRunningProcess();
+					OperatingSystem_Dispatch(process);
+					OperatingSystem_PrintStatus();
 				}
 			}
 			break;
-		//end ex-12
-		//ex-5 V2
 		case SYSCALL_SLEEP:
 			OperatingSystem_MoveToTheBLOCKState();
 			process = OperatingSystem_ShortTermScheduler();
            	OperatingSystem_Dispatch(process);
 			OperatingSystem_PrintStatus();
 			break;
-		//en ex-5 V2
-		default:
+		default: //Exercise 4 of v4
 			OperatingSystem_ShowTime(INTERRUPT);
-			int exception = Processor_GetException();
-			ComputerSystem_DebugMessage(140, INTERRUPT, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, exceptions[exception]);
+			ComputerSystem_DebugMessage(141, INTERRUPT, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, systemCallID);
 			OperatingSystem_TerminateProcess();
 			OperatingSystem_PrintStatus();
+			break;
 	}
 
 }
