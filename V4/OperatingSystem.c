@@ -474,7 +474,7 @@ void OperatingSystem_HandleSystemCall() {
            	OperatingSystem_Dispatch(process);
 			OperatingSystem_PrintStatus();
 			break;
-		default: //Exercise 4 of v4
+		default: //Exercise 4 a,b,c of v4
 			OperatingSystem_ShowTime(INTERRUPT);
 			ComputerSystem_DebugMessage(141, INTERRUPT, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, systemCallID);
 			OperatingSystem_TerminateProcess();
