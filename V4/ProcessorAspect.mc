@@ -1067,6 +1067,10 @@ enum ProcessStates { NEW, READY, EXECUTING, BLOCKED, EXIT};
 enum SystemCallIdentifiers { SYSCALL_END=3, SYSCALL_YIELD=4, SYSCALL_PRINTEXECPID=5, SYSCALL_SLEEP=7};
 
 
+
+
+
+
 typedef struct {
  int busy;
  int initialPhysicalAddress;
@@ -1507,7 +1511,6 @@ void Processor_DecodeAndExecuteInstruction() {
 
 
   case TRAP_INST:
-
    Processor_RaiseInterrupt(SYSCALL_BIT);
    registerA_CPU=operand1;
    registerPC_CPU++;

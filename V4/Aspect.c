@@ -571,20 +571,20 @@ enum ProgramTypes {USERPROGRAM,DAEMONPROGRAM};
 enum ProcessStates {NEW,READY,EXECUTING,BLOCKED,EXIT}; 
 #line 34 "OperatingSystem.h"
 enum SystemCallIdentifiers {SYSCALL_END=3,SYSCALL_YIELD=4,SYSCALL_PRINTEXECPID=5,SYSCALL_SLEEP=7}; 
-#line 49 "OperatingSystem.h"
+#line 53 "OperatingSystem.h"
 typedef struct {int busy; int initialPhysicalAddress; int processSize; int state; int priority; int copyOfPCRegister; unsigned int copyOfPSWRegister; int programListIndex; int copyOfAccumulator; int queueID; int whenToWakeUp; 
 }PCB; 
-#line 53 "OperatingSystem.h"
+#line 57 "OperatingSystem.h"
 extern  PCB processTable[]; 
-#line 54 "OperatingSystem.h"
-extern int OS_address_base; 
-#line 55 "OperatingSystem.h"
-extern int sipID; 
 #line 58 "OperatingSystem.h"
-void OperatingSystem_Initialize(); 
+extern int OS_address_base; 
 #line 59 "OperatingSystem.h"
+extern int sipID; 
+#line 62 "OperatingSystem.h"
+void OperatingSystem_Initialize(); 
+#line 63 "OperatingSystem.h"
 void OperatingSystem_InterruptLogic(int ); 
-#line 61 "OperatingSystem.h"
+#line 65 "OperatingSystem.h"
 int OperatingSystem_GetExecutingProcessID(); 
 #line 10 "OperatingSystemBase.h"
 int OperatingSystem_ObtainAnEntryInTheProcessTable(); 
@@ -622,6 +622,11 @@ extern int numberOfProgramsInArrivalTimeQueue;
 extern  heapItem arrivalTimeQueue[]; 
 #line 39 "OperatingSystemBase.h"
 extern int baseDaemonsInProgramList; 
+#line 46 "OperatingSystemBase.h"
+typedef struct {int initAddress; int size; int PID; 
+}PARTITIONDATA; 
+#line 49 "OperatingSystemBase.h"
+extern  PARTITIONDATA partitionsTable[4 * 2]; 
 # 6 "OperatingSystemBase.h" 2
 # 6 "MyAspect.c" 2
  inline void __utac_acc__Aspect__1(void) { 

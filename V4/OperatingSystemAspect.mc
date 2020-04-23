@@ -931,6 +931,10 @@ enum ProcessStates { NEW, READY, EXECUTING, BLOCKED, EXIT};
 enum SystemCallIdentifiers { SYSCALL_END=3, SYSCALL_YIELD=4, SYSCALL_PRINTEXECPID=5, SYSCALL_SLEEP=7};
 
 
+
+
+
+
 typedef struct {
  int busy;
  int initialPhysicalAddress;
@@ -989,6 +993,16 @@ extern heapItem arrivalTimeQueue[];
 
 
 extern int baseDaemonsInProgramList;
+
+
+typedef struct {
+     int initAddress;
+     int size;
+     int PID;
+} PARTITIONDATA;
+
+
+extern PARTITIONDATA partitionsTable[4*2];
 # 3 "OperatingSystem.c" 2
 # 1 "MMU.h" 1
 
@@ -2861,6 +2875,8 @@ void OperatingSystem_Initialize(int daemonsIndex) {
  FILE *programFile;
 
 
+
+
  int processSize=OperatingSystem_ObtainProgramSize(&programFile, "OperatingSystemCode");
 
 
@@ -2872,6 +2888,8 @@ void OperatingSystem_Initialize(int daemonsIndex) {
  }
 
  Processor_InitializeInterruptVectorTable(OS_address_base+2);
+
+ OperatingSystem_InitializePartitionTable();
 
 
  OperatingSystem_PrepareDaemons(daemonsIndex);

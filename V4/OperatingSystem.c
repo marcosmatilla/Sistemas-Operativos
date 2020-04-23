@@ -84,6 +84,8 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 	int i, selectedProcess;
 	FILE *programFile; // For load Operating System Code
 
+	
+
 	// Obtain the memory requirements of the program
 	int processSize=OperatingSystem_ObtainProgramSize(&programFile, "OperatingSystemCode");
 
@@ -96,6 +98,8 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 	}
 	// Initialization of the interrupt vector table of the processor
 	Processor_InitializeInterruptVectorTable(OS_address_base+2);
+
+	OperatingSystem_InitializePartitionTable(); //Excercise 5 of V4
 		
 	// Include in program list  all system daemon processes
 	OperatingSystem_PrepareDaemons(daemonsIndex);
