@@ -916,9 +916,9 @@ extern void funlockfile (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__)
 # 942 "/usr/include/stdio.h" 3 4
 
 # 6 "OperatingSystem.h" 2
-# 25 "OperatingSystem.h"
+# 27 "OperatingSystem.h"
 
-# 25 "OperatingSystem.h"
+# 27 "OperatingSystem.h"
 enum TypeOfReadyToRunProcessQueues { USERPROCESSQUEUE, DAEMONSQUEUE};
 
 
@@ -2969,6 +2969,10 @@ int OperatingSystem_LongTermScheduler() {
     OperatingSystem_ShowTime('e');
     ComputerSystem_DebugMessage(105, 'e', programList[i] -> executableName, "is too big");
     break;
+   case(-5):
+    OperatingSystem_ShowTime('e');
+    ComputerSystem_DebugMessage(144, 'e', programList[i] -> executableName);
+    break;
    default:
     numberOfSuccessfullyCreatedProcesses++;
     if (programList[i]->type==USERPROGRAM) {
@@ -3002,6 +3006,7 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
  int priority;
  FILE *programFile;
  PROGRAMS_DATA *executableProgram=programList[indexOfExecutableProgram];
+ int partition;
 
 
  PID=OperatingSystem_ObtainAnEntryInTheProcessTable();
@@ -3025,13 +3030,25 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
   return -2;
  }
 
+ partition = OperatingSystem_ObtainMainMemory(processSize, PID, executableProgram->executableName);
+ if(partition==-4)
+  return -4;
+ if(partition==-5)
+  return -5;
 
- loadingPhysicalAddress=OperatingSystem_ObtainMainMemory(processSize, PID, executableProgram->executableName);
+
+ loadingPhysicalAddress=partitionsTable[partition].initAddress;
 
 
  if (-4==OperatingSystem_LoadProgram(programFile, loadingPhysicalAddress, processSize)){
   return -4;
  }
+
+
+ OperatingSystem_ShowTime('m');
+ ComputerSystem_DebugMessage(143, 'm', partition, loadingPhysicalAddress, partitionsTable[partition].size, PID, executableProgram->executableName);
+
+ partitionsTable[partition].PID = PID;
 
 
  OperatingSystem_PCBInitialization(PID, loadingPhysicalAddress, processSize, priority, indexOfExecutableProgram);
@@ -3047,24 +3064,37 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 
 
 int OperatingSystem_ObtainMainMemory(int processSize, int PID, char*name) {
- int i = 0, particion=-1, size = 300;
+ int i = 0, particion=-1, size = 300, biggest = 0;
 
  OperatingSystem_ShowTime('m');
  ComputerSystem_DebugMessage(142, 'm', PID, name, processSize);
 
+
+ for(i = 0; i<4*2; i++){
+  if(partitionsTable[i].size > biggest){
+   biggest = partitionsTable[i].size;
+  }
+ }
+
+ if(processSize > biggest){
+  return -4;
+ }
+
+
  for(i = 0; i<4*2; i++){
 
-  if(partitionsTable[i].PID != -1 && partitionsTable[i].size >= processSize && partitionsTable[i].size < size){
+  if(partitionsTable[i].PID == -1 && partitionsTable[i].size >= processSize && partitionsTable[i].size < size){
    particion = i;
    size = partitionsTable[i].size;
   }
  }
+
+
+ if(particion < 0){
+  return -5;
+ }
+
  return particion;
-
-
-
-
-
 }
 
 

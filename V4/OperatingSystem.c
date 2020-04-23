@@ -179,6 +179,10 @@ int OperatingSystem_LongTermScheduler() {
 				OperatingSystem_ShowTime(ERROR);
 				ComputerSystem_DebugMessage(105, ERROR, programList[i] -> executableName, "is too big");
 				break;
+			case(MEMORYFULL): //Exercise 6-d-ii of V4
+				OperatingSystem_ShowTime(ERROR);
+				ComputerSystem_DebugMessage(144, ERROR, programList[i] -> executableName);
+				break;
 			default: 
 				numberOfSuccessfullyCreatedProcesses++;
 				if (programList[i]->type==USERPROGRAM) {
@@ -212,6 +216,7 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 	int priority;
 	FILE *programFile;
 	PROGRAMS_DATA *executableProgram=programList[indexOfExecutableProgram];
+	int partition;
 
 	// Obtain a process ID
 	PID=OperatingSystem_ObtainAnEntryInTheProcessTable();
@@ -235,13 +240,25 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 		return PROGRAMNOTVALID;
 	}
 
+	partition = OperatingSystem_ObtainMainMemory(processSize, PID, executableProgram->executableName);
+	if(partition==TOOBIGPROCESS)//Exercise 6-d-i of V4
+		return TOOBIGPROCESS;
+	if(partition==MEMORYFULL)//Exercise 6-d-ii of V4
+		return MEMORYFULL;
+
 	// Obtain enough memory space
-	loadingPhysicalAddress=OperatingSystem_ObtainMainMemory(processSize, PID, executableProgram->executableName);
+	loadingPhysicalAddress=partitionsTable[partition].initAddress;
 
 	// Load program in the allocated memory
 	if (TOOBIGPROCESS==OperatingSystem_LoadProgram(programFile, loadingPhysicalAddress, processSize)){
 		return TOOBIGPROCESS;
 	}
+
+	//Exercise 6-c of V4
+	OperatingSystem_ShowTime(SYSMEM);
+	ComputerSystem_DebugMessage(143, SYSMEM, partition, loadingPhysicalAddress, partitionsTable[partition].size, PID, executableProgram->executableName);
+	
+	partitionsTable[partition].PID = PID;
 	
 	// PCB initialization
 	OperatingSystem_PCBInitialization(PID, loadingPhysicalAddress, processSize, priority, indexOfExecutableProgram);
@@ -257,24 +274,37 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 // Main memory is assigned in chunks. All chunks are the same size. A process
 // always obtains the chunk whose position in memory is equal to the processor identifier
 int OperatingSystem_ObtainMainMemory(int processSize, int PID, char*name) {
-	int i = 0, particion=NOPROCESS, size = MAINMEMORYSIZE;
+	int i = 0, particion=NOPROCESS, size = MAINMEMORYSIZE, biggest = 0;
 	//Exercise 6-b of V4
 	OperatingSystem_ShowTime(SYSMEM);
 	ComputerSystem_DebugMessage(142, SYSMEM, PID, name, processSize);
+	
+	//Exercise 6-d-i of V4
+	for(i = 0; i<PARTITIONTABLEMAXSIZE; i++){
+		if(partitionsTable[i].size > biggest){
+			biggest = partitionsTable[i].size;
+		}
+	}
+	
+	if(processSize > biggest){
+		return TOOBIGPROCESS;
+	}
+
 	//Exercise 6-a of V4
 	for(i = 0; i<PARTITIONTABLEMAXSIZE; i++){ //Recorremos la tabla de particiones
 	 	//no ocupada && tamParticion >= tamProcess && tamPar < MaxSizeMemory
-		if(partitionsTable[i].PID != NOPROCESS && partitionsTable[i].size >= processSize && partitionsTable[i].size < size){
+		if(partitionsTable[i].PID == NOPROCESS && partitionsTable[i].size >= processSize && partitionsTable[i].size < size){
 			particion = i;
 			size = partitionsTable[i].size;
 		}
 	}
-	return particion;
 
- 	/*if (processSize>MAINMEMORYSECTIONSIZE)
-		return TOOBIGPROCESS;
+	//Exercise 6-d-ii of V4
+	if(particion < 0){
+		return MEMORYFULL;
+	}
 	
- 	return PID*MAINMEMORYSECTIONSIZE;*/
+	return particion;
 }
 
 

@@ -18,6 +18,8 @@
 
 #define NOPROCESS -1
 
+#define MEMORYFULL -5 //Exercise 6-d-ii of V4
+
 #define SLEEPINGQUEUE
 
 //Ejercicio 11
