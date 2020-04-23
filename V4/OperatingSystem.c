@@ -20,7 +20,7 @@ void OperatingSystem_TerminateProcess();
 int OperatingSystem_LongTermScheduler();
 void OperatingSystem_PreemptRunningProcess();
 int OperatingSystem_CreateProcess(int);
-int OperatingSystem_ObtainMainMemory(int, int);
+int OperatingSystem_ObtainMainMemory(int, int, char*name);
 int OperatingSystem_ShortTermScheduler();
 int OperatingSystem_ExtractFromReadyToRun();
 void OperatingSystem_HandleException();
@@ -236,7 +236,7 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 	}
 
 	// Obtain enough memory space
-	loadingPhysicalAddress=OperatingSystem_ObtainMainMemory(processSize, PID);
+	loadingPhysicalAddress=OperatingSystem_ObtainMainMemory(processSize, PID, executableProgram->executableName);
 
 	// Load program in the allocated memory
 	if (TOOBIGPROCESS==OperatingSystem_LoadProgram(programFile, loadingPhysicalAddress, processSize)){
@@ -256,12 +256,25 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 
 // Main memory is assigned in chunks. All chunks are the same size. A process
 // always obtains the chunk whose position in memory is equal to the processor identifier
-int OperatingSystem_ObtainMainMemory(int processSize, int PID) {
+int OperatingSystem_ObtainMainMemory(int processSize, int PID, char*name) {
+	int i = 0, particion=NOPROCESS, size = MAINMEMORYSIZE;
+	//Exercise 6-b of V4
+	OperatingSystem_ShowTime(SYSMEM);
+	ComputerSystem_DebugMessage(142, SYSMEM, PID, name, processSize);
+	//Exercise 6-a of V4
+	for(i = 0; i<PARTITIONTABLEMAXSIZE; i++){ //Recorremos la tabla de particiones
+	 	//no ocupada && tamParticion >= tamProcess && tamPar < MaxSizeMemory
+		if(partitionsTable[i].PID != NOPROCESS && partitionsTable[i].size >= processSize && partitionsTable[i].size < size){
+			particion = i;
+			size = partitionsTable[i].size;
+		}
+	}
+	return particion;
 
- 	if (processSize>MAINMEMORYSECTIONSIZE)
+ 	/*if (processSize>MAINMEMORYSECTIONSIZE)
 		return TOOBIGPROCESS;
 	
- 	return PID*MAINMEMORYSECTIONSIZE;
+ 	return PID*MAINMEMORYSECTIONSIZE;*/
 }
 
 

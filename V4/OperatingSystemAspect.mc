@@ -2810,7 +2810,7 @@ void OperatingSystem_TerminateProcess();
 int OperatingSystem_LongTermScheduler();
 void OperatingSystem_PreemptRunningProcess();
 int OperatingSystem_CreateProcess(int);
-int OperatingSystem_ObtainMainMemory(int, int);
+int OperatingSystem_ObtainMainMemory(int, int, char*name);
 int OperatingSystem_ShortTermScheduler();
 int OperatingSystem_ExtractFromReadyToRun();
 void OperatingSystem_HandleException();
@@ -3026,7 +3026,7 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
  }
 
 
- loadingPhysicalAddress=OperatingSystem_ObtainMainMemory(processSize, PID);
+ loadingPhysicalAddress=OperatingSystem_ObtainMainMemory(processSize, PID, executableProgram->executableName);
 
 
  if (-4==OperatingSystem_LoadProgram(programFile, loadingPhysicalAddress, processSize)){
@@ -3046,12 +3046,25 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 
 
 
-int OperatingSystem_ObtainMainMemory(int processSize, int PID) {
+int OperatingSystem_ObtainMainMemory(int processSize, int PID, char*name) {
+ int i = 0, particion=-1, size = 300;
 
-  if (processSize>(300 / (4 +1)))
-  return -4;
+ OperatingSystem_ShowTime('m');
+ ComputerSystem_DebugMessage(142, 'm', PID, name, processSize);
 
-  return PID*(300 / (4 +1));
+ for(i = 0; i<4*2; i++){
+
+  if(partitionsTable[i].PID != -1 && partitionsTable[i].size >= processSize && partitionsTable[i].size < size){
+   particion = i;
+   size = partitionsTable[i].size;
+  }
+ }
+ return particion;
+
+
+
+
+
 }
 
 
