@@ -1553,7 +1553,7 @@ void OperatingSystem_PreemptRunningProcess();
 #line 22 "OperatingSystem.c"
 int OperatingSystem_CreateProcess(int ); 
 #line 23 "OperatingSystem.c"
-int OperatingSystem_ObtainMainMemory(int , int , char *name); 
+int OperatingSystem_ObtainMainMemory(int , int , char *); 
 #line 24 "OperatingSystem.c"
 int OperatingSystem_ShortTermScheduler(); 
 #line 25 "OperatingSystem.c"

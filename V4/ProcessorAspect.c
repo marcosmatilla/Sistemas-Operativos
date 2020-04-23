@@ -639,29 +639,29 @@ extern void funlockfile( FILE *__stream) __attribute__  (( __nothrow__ , __leaf_
 # 912 "/usr/include/stdio.h" 3 4
 # 942 "/usr/include/stdio.h" 3 4
 # 6 "OperatingSystem.h" 2
-# 25 "OperatingSystem.h" 
-# 25 "OperatingSystem.h" 
+# 27 "OperatingSystem.h" 
+# 27 "OperatingSystem.h" 
 enum TypeOfReadyToRunProcessQueues {USERPROCESSQUEUE,DAEMONSQUEUE}; 
-#line 28 "OperatingSystem.h"
+#line 30 "OperatingSystem.h"
 enum ProgramTypes {USERPROGRAM,DAEMONPROGRAM}; 
-#line 31 "OperatingSystem.h"
+#line 33 "OperatingSystem.h"
 enum ProcessStates {NEW,READY,EXECUTING,BLOCKED,EXIT}; 
-#line 34 "OperatingSystem.h"
+#line 36 "OperatingSystem.h"
 enum SystemCallIdentifiers {SYSCALL_END=3,SYSCALL_YIELD=4,SYSCALL_PRINTEXECPID=5,SYSCALL_SLEEP=7}; 
-#line 53 "OperatingSystem.h"
+#line 55 "OperatingSystem.h"
 typedef struct {int busy; int initialPhysicalAddress; int processSize; int state; int priority; int copyOfPCRegister; unsigned int copyOfPSWRegister; int programListIndex; int copyOfAccumulator; int queueID; int whenToWakeUp; 
 }PCB; 
-#line 57 "OperatingSystem.h"
-extern  PCB processTable[]; 
-#line 58 "OperatingSystem.h"
-extern int OS_address_base; 
 #line 59 "OperatingSystem.h"
+extern  PCB processTable[]; 
+#line 60 "OperatingSystem.h"
+extern int OS_address_base; 
+#line 61 "OperatingSystem.h"
 extern int sipID; 
-#line 62 "OperatingSystem.h"
+#line 64 "OperatingSystem.h"
 void OperatingSystem_Initialize(); 
-#line 63 "OperatingSystem.h"
-void OperatingSystem_InterruptLogic(int ); 
 #line 65 "OperatingSystem.h"
+void OperatingSystem_InterruptLogic(int ); 
+#line 67 "OperatingSystem.h"
 int OperatingSystem_GetExecutingProcessID(); 
 # 4 "Processor.c" 2
 # 1 "/usr/include/string.h" 1 3 4

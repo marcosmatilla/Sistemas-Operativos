@@ -1052,9 +1052,9 @@ extern void funlockfile (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__)
 # 942 "/usr/include/stdio.h" 3 4
 
 # 6 "OperatingSystem.h" 2
-# 25 "OperatingSystem.h"
+# 27 "OperatingSystem.h"
 
-# 25 "OperatingSystem.h"
+# 27 "OperatingSystem.h"
 enum TypeOfReadyToRunProcessQueues { USERPROCESSQUEUE, DAEMONSQUEUE};
 
 

@@ -20,7 +20,7 @@ void OperatingSystem_TerminateProcess();
 int OperatingSystem_LongTermScheduler();
 void OperatingSystem_PreemptRunningProcess();
 int OperatingSystem_CreateProcess(int);
-int OperatingSystem_ObtainMainMemory(int, int, char*name);
+int OperatingSystem_ObtainMainMemory(int, int, char*);
 int OperatingSystem_ShortTermScheduler();
 int OperatingSystem_ExtractFromReadyToRun();
 void OperatingSystem_HandleException();
@@ -303,7 +303,7 @@ int OperatingSystem_ObtainMainMemory(int processSize, int PID, char*name) {
 	if(particion < 0){
 		return MEMORYFULL;
 	}
-	
+
 	return particion;
 }
 
