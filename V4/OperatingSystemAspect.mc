@@ -2902,11 +2902,16 @@ void OperatingSystem_Initialize(int daemonsIndex) {
  OperatingSystem_LongTermScheduler();
 
 
+ if( numberOfNotTerminatedUserProcesses == 0 && OperatingSystem_IsThereANewProgram() == 0){
+  OperatingSystem_ReadyToShutdown();
+ }
+
  if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
 
   ComputerSystem_DebugMessage(99,'d',"FATAL ERROR: Missing SIP program!\n");
   exit(1);
  }
+
 
 
 
@@ -3406,11 +3411,6 @@ void OperatingSystem_HandleClockInterrupt(){
 
  int newProcess = OperatingSystem_LongTermScheduler();
 
-  if (numberOfNotTerminatedUserProcesses == 0 && numberOfProgramsInArrivalTimeQueue == 0)
-    {
-        OperatingSystem_ReadyToShutdown();
-    }
-
 
  if(unlocked || newProcess > 0){
   queueToExecute = OperatingSystem_CheckQueue();
@@ -3427,7 +3427,17 @@ void OperatingSystem_HandleClockInterrupt(){
     OperatingSystem_PrintStatus();
    }
   }
+ }else {
+  if(OperatingSystem_IsThereANewProgram() == 0){
+   OperatingSystem_ReadyToShutdown();
+  }
+
  }
+
+
+
+
+
 
 }
 
