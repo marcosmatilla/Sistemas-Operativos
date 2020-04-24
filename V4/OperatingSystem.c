@@ -77,14 +77,11 @@ char * queueNames [NUMBEROFQUEUES]={"USER","DAEMONS"};
 // Variable containing the number of not terminated user processes
 int numberOfNotTerminatedUserProcesses=0;
 
-
 // Initial set of tasks of the OS
 void OperatingSystem_Initialize(int daemonsIndex) {
 	
 	int i, selectedProcess;
 	FILE *programFile; // For load Operating System Code
-
-	
 
 	// Obtain the memory requirements of the program
 	int processSize=OperatingSystem_ObtainProgramSize(&programFile, "OperatingSystemCode");
@@ -159,7 +156,7 @@ void OperatingSystem_PrepareDaemons(int programListDaemonsBase) {
 // Initially, it creates a process from each program specified in the 
 // 			command lineand daemons programs
 int OperatingSystem_LongTermScheduler() {
-  
+	
 	int PID, i,
 		numberOfSuccessfullyCreatedProcesses=0;
 	
@@ -198,7 +195,6 @@ int OperatingSystem_LongTermScheduler() {
 				else{
 					OperatingSystem_MoveToTheREADYState(PID,DAEMONSQUEUE);
 				}	
-				
 		}
 	}
 	if (numberOfSuccessfullyCreatedProcesses >= 1)

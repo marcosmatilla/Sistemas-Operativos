@@ -2868,13 +2868,10 @@ char * queueNames [2]={"USER","DAEMONS"};
 int numberOfNotTerminatedUserProcesses=0;
 
 
-
 void OperatingSystem_Initialize(int daemonsIndex) {
 
  int i, selectedProcess;
  FILE *programFile;
-
-
 
 
  int processSize=OperatingSystem_ObtainProgramSize(&programFile, "OperatingSystemCode");
@@ -2988,7 +2985,6 @@ int OperatingSystem_LongTermScheduler() {
     else{
      OperatingSystem_MoveToTheREADYState(PID,DAEMONSQUEUE);
     }
-
   }
  }
  if (numberOfSuccessfullyCreatedProcesses >= 1)
