@@ -1,0 +1,7 @@
+//Prueba el ejercicio 4: realiza llamada al sistema inválida.
+5
+10
+INC 9
+ADD 1 50
+TRAP 24
+TRAP 3

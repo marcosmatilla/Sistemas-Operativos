@@ -15,7 +15,7 @@
             "preLaunchTask": "Build_Simulator", // The name of the task defined above
             "request": "launch",
             "program": "${workspaceFolder}/Simulator",
-            "args": ["--debugSections=","--initialPID=3", "prog-V2-E5","prog-V2-E5"],
+            "args": ["--debugSections=","--initialPID=3", "prueba1","prueba2"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

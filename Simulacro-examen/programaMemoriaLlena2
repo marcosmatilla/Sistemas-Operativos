@@ -1,0 +1,20 @@
+//Programa de gran tamaño pero que cabe en alguna de las particiones.
+//Se ejecuta conjuntamente con programaMemoriaLlena1 para probar:
+//	·Error al intentar crear un nuevo programa para cuyo tamaño no quedan
+//		particiones de memoria libres: si se ejecuta antes de que acabe programaMemoriaLlena1.
+//	·Ejecución correcta si se ejecuta tras terminar programaMemoriaLlena1 pues utiliza
+//		sus particiones liberadas.
+95
+12
+ADD 1 2
+ADD 1 2
+INC 12
+INC 12
+ADD 1 2
+NOP
+ADD 1 2
+INC 12
+INC 12
+ADD 1 2
+ADD 1 2
+TRAP 3

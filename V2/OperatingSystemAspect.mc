@@ -3216,7 +3216,7 @@ void OperatingSystem_HandleSystemCall() {
    queueID = processTable[executingProcessID].queueID;
    if(numberOfReadyToRunProcesses[queueID]>0){
     process = OperatingSystem_ExtractFromReadyToRun(queueID);
-    if(executingProcessID!=process){
+
      if(processTable[executingProcessID].priority == processTable[process].priority){
       OperatingSystem_ShowTime('s');
       ComputerSystem_DebugMessage(115,'s',processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
@@ -3224,7 +3224,7 @@ void OperatingSystem_HandleSystemCall() {
       OperatingSystem_Dispatch(process);
       OperatingSystem_PrintStatus();
      }
-    }
+
    }
    break;
 
