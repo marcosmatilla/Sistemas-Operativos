@@ -2823,6 +2823,7 @@ int OperatingSystem_CheckQueue();
 int OperatingSystem_ExtractFromBlocked();
 int OperatingSystem_CheckExecutingPriority(int);
 int OperatingSystem_GetExecutingProcessID();
+void OperatingSystem_ShowPartitionTable(char *mensaje);
 
 int Processor_GetException();
 
@@ -2840,6 +2841,8 @@ char * statesNames [5]={"NEW","READY","EXECUTING","BLOCKED","EXIT"};
 
 char * exceptions[4]={"division by zero", "invalid processor mode", "invalid address", "invalid instruction"};
 
+
+char * allocating[2]={"before_allocating_memory","after_allocating_memory"};
 
 PCB processTable[4];
 
@@ -3031,11 +3034,13 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
   return -2;
  }
 
+ OperatingSystem_ShowPartitionTable(allocating[0]);
  partition = OperatingSystem_ObtainMainMemory(processSize, PID, executableProgram->executableName);
  if(partition==-4)
   return -4;
  if(partition==-5)
   return -5;
+ OperatingSystem_ShowPartitionTable(allocating[1]);
 
 
  loadingPhysicalAddress=partitionsTable[partition].initAddress;
