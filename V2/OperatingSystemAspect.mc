@@ -3215,16 +3215,19 @@ void OperatingSystem_HandleSystemCall() {
   case SYSCALL_YIELD:
    queueID = processTable[executingProcessID].queueID;
    if(numberOfReadyToRunProcesses[queueID]>0){
-    process = OperatingSystem_ExtractFromReadyToRun(queueID);
-
+    process = Heap_getFirst(readyToRunQueue[queueID], numberOfReadyToRunProcesses[queueID]);
+    if(process != -1){
      if(processTable[executingProcessID].priority == processTable[process].priority){
+      Heap_poll(readyToRunQueue[queueID], 1, &numberOfReadyToRunProcesses[queueID]);
       OperatingSystem_ShowTime('s');
-      ComputerSystem_DebugMessage(115,'s',processTable[executingProcessID].programListIndex, programList[processTable[executingProcessID].programListIndex] -> executableName, processTable[process].programListIndex, programList[processTable[process].programListIndex] -> executableName);
+      ComputerSystem_DebugMessage(115,'s',
+      executingProcessID, programList[processTable[executingProcessID].programListIndex] -> executableName,
+      process, programList[processTable[process].programListIndex] -> executableName);
       OperatingSystem_PreemptRunningProcess();
       OperatingSystem_Dispatch(process);
       OperatingSystem_PrintStatus();
      }
-
+    }
    }
    break;
 
