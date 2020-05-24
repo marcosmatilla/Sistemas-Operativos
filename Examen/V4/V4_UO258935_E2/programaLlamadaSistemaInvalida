@@ -1,0 +1,6 @@
+5
+10
+INC 9
+ADD 1 50
+TRAP 24
+TRAP 3

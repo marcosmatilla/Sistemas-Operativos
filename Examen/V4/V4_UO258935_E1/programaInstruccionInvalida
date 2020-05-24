@@ -1,0 +1,7 @@
+13
+1
+ADD 0 1
+INC 3
+NOP
+OMB 10 0
+TRAP 3

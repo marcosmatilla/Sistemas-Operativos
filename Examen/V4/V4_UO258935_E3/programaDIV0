@@ -1,0 +1,8 @@
+//Prueba el ejercicio 2: ejecuta división por 0.
+//Se eleva excepción DIVISIONBYZERO.
+10
+9
+NOP
+ADD 10 5
+DIV 5 0
+TRAP

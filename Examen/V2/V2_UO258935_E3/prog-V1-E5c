@@ -1,0 +1,6 @@
+/
+6
+NOP
+ADD 10 -13
+WRITE
+TRAP 3
