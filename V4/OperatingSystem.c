@@ -34,7 +34,7 @@ int OperatingSystem_ExtractFromBlocked();
 int OperatingSystem_CheckExecutingPriority(int);
 int OperatingSystem_GetExecutingProcessID();
 void OperatingSystem_ShowPartitionTable(char *mensaje); //Exercise 7 of V4
-void OperatingSystem_ReleaseMainMemory(int); //Excercise 8 of V4
+void OperatingSystem_ReleaseMainMemory(); //Excercise 8 of V4
 
 int Processor_GetException();
 //ex-4
@@ -117,9 +117,9 @@ void OperatingSystem_Initialize(int daemonsIndex) {
 	OperatingSystem_LongTermScheduler(); 
 	//end ex-15 V1
 
-	/*if( numberOfNotTerminatedUserProcesses == 0 && OperatingSystem_IsThereANewProgram() == NO){ 
+	if( numberOfNotTerminatedUserProcesses == 0 && arrivalTimeQueue == 0){ 
 		OperatingSystem_ReadyToShutdown();
-	}*/
+	}
 
 	if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
 		// Show red message "FATAL ERROR: Missing SIP program!\n"
@@ -248,9 +248,7 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 	if(priority==PROGRAMNOTVALID){
 		return PROGRAMNOTVALID;
 	}
-
 	
-
 	partition = OperatingSystem_ObtainMainMemory(processSize, PID, executableProgram->executableName);
 
 	// Obtain enough memory space
@@ -274,18 +272,11 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 	
 	OperatingSystem_ShowPartitionTable(allocating[1]); //Exercise 7 of V4
 	
-	
 
 	// Load program in the allocated memory
 	if (TOOBIGPROCESS==OperatingSystem_LoadProgram(programFile, loadingPhysicalAddress, processSize)){
 		return TOOBIGPROCESS;
 	}
-
-	
-	
-
-	
-	
 
 	// Show message "Process [PID] created from program [executableName]\n"
 	OperatingSystem_ShowTime(INIT);
@@ -330,7 +321,6 @@ int OperatingSystem_ObtainMainMemory(int processSize, int PID, char*name) {
 
 	return particion;
 }
-
 
 // Assign initial values to all fields inside the PCB
 void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int processSize, int priority, int processPLIndex) {
@@ -482,12 +472,8 @@ void OperatingSystem_TerminateProcess() {
 	OperatingSystem_ShowTime(SYSPROC);
 	ComputerSystem_DebugMessage(110, SYSPROC, executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, statesNames[2], statesNames[processTable[executingProcessID].state]);
 	
-
-	OperatingSystem_ShowPartitionTable(allocating2[0]);	//releasing	
-	OperatingSystem_ReleaseMainMemory(executingProcessID); //Excercise 8 of V4
-	OperatingSystem_ShowPartitionTable(allocating2[1]);
+	OperatingSystem_ReleaseMainMemory(); //Excercise 8 of V4
 	
-
 	if (programList[processTable[executingProcessID].programListIndex]->type==USERPROGRAM) 
 		// One more user process that has terminated
 		numberOfNotTerminatedUserProcesses--;
@@ -511,27 +497,21 @@ void OperatingSystem_TerminateProcess() {
 	OperatingSystem_Dispatch(selectedProcess);
 }
 
-void OperatingSystem_ReleaseMainMemory(int PID){ //Excercise 8 of V4
-	OperatingSystem_ShowTime(SYSMEM);
-	int i;
-	int part, initAd, size;
-	char* name;
-	for(i=0; i<=PARTITIONTABLEMAXSIZE; i++){
-		if(partitionsTable[i].PID==PID){						
-
-			initAd = partitionsTable[i].initAddress;
-			size = partitionsTable[i].size;
-
-			name=programList[processTable[executingProcessID].programListIndex]->executableName;			
-
-			partitionsTable[i].PID = NOPROCESS;
-			part = i;
-			
-			break;
-		}
-	}
-	ComputerSystem_DebugMessage(145, SYSMEM, part,initAd,size,executingProcessID, name);
-
+void OperatingSystem_ReleaseMainMemory()
+{
+    int i;
+    for (i = 0; i <= PARTITIONTABLEMAXSIZE; i++){
+        if (partitionsTable[i].PID == executingProcessID && partitionsTable[i].PID != NOPROCESS){
+			OperatingSystem_ShowPartitionTable(allocating2[0]);	//releasing	
+            partitionsTable[i].PID = NOPROCESS;
+            OperatingSystem_ShowTime(SYSMEM);
+            ComputerSystem_DebugMessage(145, SYSMEM, i,
+                                        partitionsTable[i].initAddress, partitionsTable[i].size,
+                                        executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName);
+			OperatingSystem_ShowPartitionTable(allocating2[1]);
+            break;
+        }
+    }
 }
 
 // System call management routine
@@ -699,11 +679,6 @@ void OperatingSystem_HandleClockInterrupt(){
 		}
 
 	}
-
-	/*if (numberOfNotTerminatedUserProcesses == 0 && numberOfProgramsInArrivalTimeQueue == 0) //ex 4 b V3
-    {
-        OperatingSystem_ReadyToShutdown();
-    }*/
 
 }
 //end ex-2 V2

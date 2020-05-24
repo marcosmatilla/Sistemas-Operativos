@@ -2824,7 +2824,7 @@ int OperatingSystem_ExtractFromBlocked();
 int OperatingSystem_CheckExecutingPriority(int);
 int OperatingSystem_GetExecutingProcessID();
 void OperatingSystem_ShowPartitionTable(char *mensaje);
-void OperatingSystem_ReleaseMainMemory(int);
+void OperatingSystem_ReleaseMainMemory();
 
 int Processor_GetException();
 
@@ -2907,9 +2907,9 @@ void OperatingSystem_Initialize(int daemonsIndex) {
  OperatingSystem_LongTermScheduler();
 
 
-
-
-
+ if( numberOfNotTerminatedUserProcesses == 0 && arrivalTimeQueue == 0){
+  OperatingSystem_ReadyToShutdown();
+ }
 
  if (strcmp(programList[processTable[sipID].programListIndex]->executableName,"SystemIdleProcess")) {
 
@@ -3039,8 +3039,6 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
   return -2;
  }
 
-
-
  partition = OperatingSystem_ObtainMainMemory(processSize, PID, executableProgram->executableName);
 
 
@@ -3066,11 +3064,11 @@ int OperatingSystem_CreateProcess(int indexOfExecutableProgram) {
 
 
 
-
  if (-4==OperatingSystem_LoadProgram(programFile, loadingPhysicalAddress, processSize)){
   return -4;
  }
-# 291 "OperatingSystem.c"
+
+
  OperatingSystem_ShowTime('t');
  ComputerSystem_DebugMessage(70,'t',PID,executableProgram->executableName);
 
@@ -3113,7 +3111,6 @@ int OperatingSystem_ObtainMainMemory(int processSize, int PID, char*name) {
 
  return particion;
 }
-
 
 
 void OperatingSystem_PCBInitialization(int PID, int initialPhysicalAddress, int processSize, int priority, int processPLIndex) {
@@ -3265,11 +3262,7 @@ void OperatingSystem_TerminateProcess() {
  OperatingSystem_ShowTime('p');
  ComputerSystem_DebugMessage(110, 'p', executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName, statesNames[2], statesNames[processTable[executingProcessID].state]);
 
-
- OperatingSystem_ShowPartitionTable(allocating2[0]);
- OperatingSystem_ReleaseMainMemory(executingProcessID);
- OperatingSystem_ShowPartitionTable(allocating2[1]);
-
+ OperatingSystem_ReleaseMainMemory();
 
  if (programList[processTable[executingProcessID].programListIndex]->type==USERPROGRAM)
 
@@ -3294,27 +3287,21 @@ void OperatingSystem_TerminateProcess() {
  OperatingSystem_Dispatch(selectedProcess);
 }
 
-void OperatingSystem_ReleaseMainMemory(int PID){
- OperatingSystem_ShowTime('m');
- int i;
- int part, initAd, size;
- char* name;
- for(i=0; i<=4*2; i++){
-  if(partitionsTable[i].PID==PID){
-
-   initAd = partitionsTable[i].initAddress;
-   size = partitionsTable[i].size;
-
-   name=programList[processTable[executingProcessID].programListIndex]->executableName;
-
-   partitionsTable[i].PID = -1;
-   part = i;
-
-   break;
-  }
- }
- ComputerSystem_DebugMessage(145, 'm', part,initAd,size,executingProcessID, name);
-
+void OperatingSystem_ReleaseMainMemory()
+{
+    int i;
+    for (i = 0; i <= 4*2; i++){
+        if (partitionsTable[i].PID == executingProcessID && partitionsTable[i].PID != -1){
+   OperatingSystem_ShowPartitionTable(allocating2[0]);
+            partitionsTable[i].PID = -1;
+            OperatingSystem_ShowTime('m');
+            ComputerSystem_DebugMessage(145, 'm', i,
+                                        partitionsTable[i].initAddress, partitionsTable[i].size,
+                                        executingProcessID, programList[processTable[executingProcessID].programListIndex]->executableName);
+   OperatingSystem_ShowPartitionTable(allocating2[1]);
+            break;
+        }
+    }
 }
 
 
@@ -3482,11 +3469,6 @@ void OperatingSystem_HandleClockInterrupt(){
   }
 
  }
-
-
-
-
-
 
 }
 

@@ -1,5 +1,3 @@
-//Prueba el ejercicio 3: ejecuta instrucción desconocida.
-//Se eleva excepción INVALIDINSTRUCTION.
 13
 1
 ADD 0 1

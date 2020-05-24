@@ -1,9 +1,3 @@
-//Programa de gran tamaño pero que cabe en alguna de las particiones.
-//Se ejecuta conjuntamente con programaMemoriaLlena2 para probar:
-//	·Error al intentar crear un nuevo programa para cuyo tamaño no quedan
-//		particiones de memoria libres: si se ejecuta antes de que acabe programaMemoriaLlena2.
-//	·Ejecución correcta si se ejecuta tras terminar programaMemoriaLlena2 pues utiliza
-//		sus particiones liberadas.
 95
 5
 ADD 5 5
