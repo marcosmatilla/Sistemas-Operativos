@@ -1,0 +1,85 @@
+Ejercicio V2.Op2
+
+void OperatingSystem_PrintReadyToRunQueue(){ //Examen-Mayo 2020
+	int i,PID,j;
+	int contadorUser, contadorDaemons;
+	OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
+	ComputerSystem_DebugMessage(106,SHORTTERMSCHEDULE);
+	for(i=0; i<NUMBEROFQUEUES; i++){
+		contadorUser = 0; 
+		contadorDaemons = 0;
+		if(i==USERPROCESSQUEUE) {
+			if(numberOfReadyToRunProcesses[i] != 0){
+				for(j=0; j<numberOfReadyToRunProcesses[i];j++){ //Contar numero procesos cola user
+					contadorUser++;
+				}
+				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE,contadorUser);
+			}
+			else{
+				ComputerSystem_DebugMessage(112,SHORTTERMSCHEDULE,0);
+				ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);
+			}
+			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
+				PID=readyToRunQueue[i][j].info;
+				if(j==numberOfReadyToRunProcesses[i]-1){
+					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,"\n");
+				}
+				else{
+					
+					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,",");
+				}
+			}
+		}
+		if(i==DAEMONSQUEUE) {
+			if(numberOfReadyToRunProcesses[i] != 0){
+				for(j=0; j<numberOfReadyToRunProcesses[i];j++){ //Contar numero procesos cola daemons
+					contadorDaemons++;
+				}
+				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE,contadorDaemons);
+			}	
+			else{
+				ComputerSystem_DebugMessage(113,SHORTTERMSCHEDULE,0);
+				ComputerSystem_DebugMessage(108,SHORTTERMSCHEDULE);	
+			}
+			for(j=0; j<numberOfReadyToRunProcesses[i];j++){
+				PID=readyToRunQueue[i][j].info;
+				if(j==numberOfReadyToRunProcesses[i]-1){
+					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,"\n");
+				}
+				else{
+					
+					ComputerSystem_DebugMessage(107,SHORTTERMSCHEDULE,PID,processTable[PID].priority,",");
+				}
+			}
+		}		
+	}
+}
+
+
+Ejercicio V2.Op5
+	int booleanFirst = 0; //Inicializamos la variable booleana para la comprobación.
+	case SYSCALL_YIELD: //Examen Mayo 2020 
+			if(booleanFirst == 1){ //Si entra por aquí es porque no iba a ser el primer proceso que ceda el control al procesador, y con lo cual no se ejecutará el else
+				OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
+				ComputerSystem_DebugMessage(130,SHORTTERMSCHEDULE,executingProcessID, programList[processTable[executingProcessID].programListIndex] -> executableName);
+			}
+			else{
+				queueID = processTable[executingProcessID].queueID;
+				if(numberOfReadyToRunProcesses[queueID]>0){
+					process = Heap_getFirst(readyToRunQueue[queueID], numberOfReadyToRunProcesses[queueID]);
+					if(process != NOPROCESS){
+						if(processTable[executingProcessID].priority == processTable[process].priority){
+							Heap_poll(readyToRunQueue[queueID], QUEUE_PRIORITY, &numberOfReadyToRunProcesses[queueID]);
+							OperatingSystem_ShowTime(SHORTTERMSCHEDULE);
+							ComputerSystem_DebugMessage(115,SHORTTERMSCHEDULE,
+							executingProcessID, programList[processTable[executingProcessID].programListIndex] -> executableName, 
+							process, programList[processTable[process].programListIndex] -> executableName);
+							OperatingSystem_PreemptRunningProcess();
+							OperatingSystem_Dispatch(process);
+							OperatingSystem_PrintStatus();
+							booleanFirst = 1; //Si ya lo ha hecho una vez, se pone a true 
+						}
+					}
+				}
+			}
+			break;

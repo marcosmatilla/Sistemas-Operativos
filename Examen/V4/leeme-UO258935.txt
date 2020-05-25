@@ -1,0 +1,78 @@
+V4_UO258935_Op1
+
+// Instruction MEMADD
+		case MEMADD_INST: // Examen-Mayo 2020
+			registerMAR_CPU=operand2;
+			Buses_write_AddressBus_From_To(CPU, MMU);
+			registerCTRL_CPU=CTRLREAD;
+			Buses_write_ControlBus_From_To(CPU,MMU);
+
+			registerMAR_CPU=operand1;
+			Buses_write_AddressBus_From_To(CPU, MMU);
+			registerCTRL_CPU=CTRLREAD;
+			Buses_write_ControlBus_From_To(CPU,MMU);
+
+			registerAccumulator_CPU= registerMBR_CPU.cell + registerMBR_CPU.cell;
+			registerPC_CPU++;
+			break;
+			
+			
+V4_UO258935_Op3
+
+//Elegir partición para el proceso siguiendo la política (estrategia) si hubiese varias, se debe elegir la que empiece en una dirección de memoria más alta. (peor ajuste)
+int OperatingSystem_ObtainMainMemory(int processSize, int PID, char*name) { // Examen-Mayo 2020
+	int i = 0, particion=NOPROCESS, size = 0, biggest = 0; //el size (MAINMEMORYSIZE) cambia ya que ahora necesitamos el que tenga la direccion mas alta, no la mas baja como antes.
+	//Exercise 6-a of V4
+	for(i = 0; i<PARTITIONTABLEMAXSIZE; i++){ //Recorremos la tabla de particiones
+	 	//no ocupada && tamParticion >= tamProcess && tamPar > MaxSizeMemory
+		if(partitionsTable[i].PID == NOPROCESS && partitionsTable[i].size >= processSize && partitionsTable[i].size > size){ //ahora tendriamos que coger la que empice por la direccion mas alta
+			particion = i;
+			size = partitionsTable[i].size;
+		}
+	}
+
+V4_UO258935_Op6
+
+messagesSTD.txt
+160,Partition [%d] has an internal fragmentation of [%d]\n
+161,The average internal fragmentation is [%d]\n
+
+OperatingSystem.h
+int fragmentation; (PCB) -> Para calcular grado de fragmentacion de todos los procesos al finalizar la ejecución.
+
+int OperatingSystem_ObtainMainMemory(int processSize, int PID, char*name) {
+	for(i = 0; i<PARTITIONTABLEMAXSIZE; i++){ //Recorremos la tabla de particiones
+	 	//no ocupada && tamParticion >= tamProcess && tamPar < MaxSizeMemory
+		if(partitionsTable[i].PID == NOPROCESS && partitionsTable[i].size >= processSize && partitionsTable[i].size < size){
+			particion = i;
+			size = partitionsTable[i].size;
+			fragmentacion=partitionsTable[i].size - processSize;	
+			processTable[i].fragmentation=partitionsTable[i].size - processSize; //para guardar la fragmentacion de cada proceso ejecutado
+		}
+	}
+	
+	//Examen-Mayo 2020
+	OperatingSystem_ShowTime(SYSMEM); //Mensaje de la fragmentacion
+	ComputerSystem_DebugMessage(160, SYSMEM, particion, fragmentacion); //muestra la informacion cada vez que se asigna una particion
+}
+
+void OperatingSystem_TerminateProcess() {
+	int total = 0, media = 0;
+		for (i=0; i<PROCESSTABLEMAXSIZE;i++){
+			total = total + processTable[i].fragmentation;
+		}	
+
+		media = (total)/PROCESSTABLEMAXSIZE;
+		
+			if (numberOfNotTerminatedUserProcesses==0) {
+		if (executingProcessID==sipID) {
+			// finishing sipID, change PC to address of OS HALT instruction
+
+			OperatingSystem_ShowTime(SYSMEM); //Mensaje de la fragmentacion
+			ComputerSystem_DebugMessage(161, SYSMEM, media); //muestra la informacion de la media de fragmentacion
+			...
+			}
+		...
+		}
+	...
+}
